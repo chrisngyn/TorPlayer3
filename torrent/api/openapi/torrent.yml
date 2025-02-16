@@ -1,0 +1,272 @@
+openapi: "3.0.2"
+info:
+  title: "Torrent Server API"
+  version: "1.0.0"
+  description: "API for managing torrents, this server run on local for desktop application."
+
+servers:
+  - url: "http://localhost:8080"
+    description: "Local development server"
+
+tags:
+  - name: "torrent"
+    description: "Torrent management"
+    x-displayName: "Torrents"
+  - name: "stream"
+    description: "Stream files from torrent"
+    x-displayName: "Streaming"
+
+paths:
+  /stream/{infoHash}/videos/{fileIndex}/{fileName}:
+    get:
+      operationId: streamVideoFile
+      tags:
+        - stream
+      summary: "Stream video file"
+      description: "Stream video file from torrent"
+      parameters:
+        - $ref: "#/components/parameters/infoHash"
+        - $ref: "#/components/parameters/fileIndex"
+        - $ref: "#/components/parameters/fileName"
+      responses:
+        '200':
+          description: "Video file stream"
+          content:
+            video/mp4:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: "File not found"
+        '500':
+          description: "Internal server error"
+
+  /stream/{infoHash}/files/{fileIndex}/{fileName}:
+    get:
+      operationId: streamFile
+      tags:
+        - stream
+      summary: "Stream file"
+      description: "Stream file from torrent"
+      parameters:
+        - $ref: "#/components/parameters/infoHash"
+        - $ref: "#/components/parameters/fileIndex"
+        - $ref: "#/components/parameters/fileName"
+      responses:
+        '200':
+          description: "File stream"
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: "File not found"
+        '500':
+          description: "Internal server error"
+
+  /torrents:
+    get:
+      operationId: listTorrents
+      tags:
+        - torrent
+      summary: "List torrents"
+      description: "List of torrents"
+      responses:
+        '200':
+          description: "List of torrents"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  torrents:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Torrent"
+                required: [ "torrents" ]
+        '500':
+          description: "Internal server error"
+
+    post:
+      operationId: addTorrent
+      tags:
+        - torrent
+      summary: "Add torrent"
+      description: "Add torrent"
+      parameters:
+        - name: dropOthers
+          in: query
+          description: "Drop other torrents"
+          required: false
+          schema:
+            type: boolean
+        - name: deleteOthers
+          in: query
+          description: "Delete other torrents"
+          required: false
+          schema:
+            type: boolean
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              title: "AddTorrentRequest"
+              type: object
+              properties:
+                link:
+                  type: string
+                  description: "Torrent link or magnet"
+              required:
+                - link
+      responses:
+        '200':
+          description: "Torrent details"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Torrent"
+        '400':
+          description: "Invalid request"
+        '500':
+          description: "Internal server error"
+
+    delete:
+      operationId: dropAllTorrents
+      tags:
+        - torrent
+      summary: "Drop all torrents"
+      description: "Drop all torrents"
+      parameters:
+        - name: delete
+          in: query
+          description: "Delete torrents"
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '204':
+          description: "Torrents dropped"
+        '500':
+          description: "Internal server error"
+
+
+  /torrents/{infoHash}/{fileIndex}/stats:
+    get:
+      operationId: getTorrentStats
+      tags:
+        - torrent
+      summary: "Get torrent stats"
+      description: "Get torrent stats"
+      parameters:
+        - $ref: "#/components/parameters/infoHash"
+        - $ref: "#/components/parameters/fileIndex"
+      responses:
+        '200':
+          description: "Torrent stats"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Stats"
+        '404':
+          description: "Torrent not found"
+        '500':
+          description: "Internal server error"
+
+
+components:
+  parameters:
+    infoHash:
+      name: infoHash
+      in: path
+      description: "Torrent info hash"
+      required: true
+      schema:
+        type: string
+    fileIndex:
+      name: fileIndex
+      in: path
+      description: "File index"
+      required: true
+      schema:
+        type: integer
+    fileName:
+      name: fileName
+      in: path
+      description: "File name"
+      required: true
+      schema:
+        type: string
+  schemas:
+    Torrent:
+      type: object
+      properties:
+        infoHash:
+          type: string
+          description: "Torrent info hash"
+        name:
+          type: string
+          description: "Torrent name"
+        size:
+          type: integer
+          format: int64
+          description: "Torrent size"
+        files:
+          type: array
+          items:
+            $ref: "#/components/schemas/File"
+      required:
+        - infoHash
+        - name
+        - size
+        - files
+
+    File:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "File name"
+        size:
+          type: integer
+          format: int64
+          description: "File size"
+      required:
+        - name
+        - size
+    
+    Stats:
+      type: object
+      properties:
+        totalPeers:
+          type: integer
+          description: "Total peers"
+        pendingPeers:
+          type: integer
+          description: "Pending peers"
+        activePeers:
+          type: integer
+          description: "Active peers"
+        connectedPeers:
+          type: integer
+          description: "Connected peers"
+        halfOpenPeers:
+          type: integer
+          description: "Half open peers"
+        length:
+          type: integer
+          description: "Length"
+          format: int64
+        bytesCompleted:
+          type: integer
+          description: "Bytes completed"
+          format: int64
+      required:
+        - totalPeers
+        - pendingPeers
+        - activePeers
+        - connectedPeers
+        - halfOpenPeers
+        - length
+        - bytesCompleted
