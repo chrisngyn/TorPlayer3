@@ -152,7 +152,7 @@ paths:
           description: "Internal server error"
 
 
-  /torrents/{infoHash}/{fileIndex}/stats:
+  /torrents/{infoHash}//{fileIndex}/stats:
     get:
       operationId: getTorrentStats
       tags:

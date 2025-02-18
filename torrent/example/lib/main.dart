@@ -1,9 +1,14 @@
-import 'package:flutter/material.dart';
-import 'dart:async';
+import 'dart:io';
 
+import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:torrent/torrent.dart' as torrent;
+import 'package:torrent_example/home_page.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  MediaKit.ensureInitialized();
+
   runApp(const MyApp());
 }
 
@@ -15,60 +20,29 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late int sumResult;
-  late Future<int> sumAsyncResult;
+  static const dataDirPath = '/home/chrisngyn/Downloads/TorPlayer';
 
   @override
   void initState() {
+    torrent.LibTorrent().start(dataDirPath, 1);
     super.initState();
-    sumResult = torrent.sum(1, 2);
-    sumAsyncResult = torrent.sumAsync(3, 4);
+  }
+
+  @override
+  void dispose() {
+    torrent.LibTorrent().stop();
+    Directory(dataDirPath).deleteSync(recursive: true);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    const textStyle = TextStyle(fontSize: 25);
-    const spacerSmall = SizedBox(height: 10);
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Native Packages'),
-        ),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              children: [
-                const Text(
-                  'This calls a native function through FFI that is shipped as source in the package. '
-                  'The native code is built as part of the Flutter Runner build.',
-                  style: textStyle,
-                  textAlign: TextAlign.center,
-                ),
-                spacerSmall,
-                Text(
-                  'sum(1, 2) = $sumResult',
-                  style: textStyle,
-                  textAlign: TextAlign.center,
-                ),
-                spacerSmall,
-                FutureBuilder<int>(
-                  future: sumAsyncResult,
-                  builder: (BuildContext context, AsyncSnapshot<int> value) {
-                    final displayValue =
-                        (value.hasData) ? value.data : 'loading';
-                    return Text(
-                      'await sumAsync(3, 4) = $displayValue',
-                      style: textStyle,
-                      textAlign: TextAlign.center,
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+ 
+    return const MaterialApp(
+      home: HomePage(),
     );
   }
 }
+
+
+

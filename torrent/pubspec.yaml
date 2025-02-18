@@ -1,20 +1,23 @@
 name: torrent
 description: "A new Flutter FFI plugin project."
 version: 0.0.1
-homepage:
+publish_to: none
 
 environment:
-  sdk: ^3.5.0
+  sdk: '>=3.4.4 <4.0.0'
   flutter: '>=3.3.0'
 
 dependencies:
+  ffi: ^2.1.2
   flutter:
     sdk: flutter
+  path: ^1.9.0
   plugin_platform_interface: ^2.0.2
+  openapi_client:
+    path: ./api/generated/torrent
 
 dev_dependencies:
-  ffi: ^2.1.0
-  ffigen: ^11.0.0
+  ffigen: ^13.0.0
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
@@ -53,10 +56,10 @@ flutter:
   #   - images/a_dot_ham.jpeg
   #
   # For details regarding assets in packages, see
-  # https://flutter.dev/to/asset-from-package
+  # https://flutter.dev/assets-and-images/#from-packages
   #
   # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/to/resolution-aware-images
+  # https://flutter.dev/assets-and-images/#resolution-aware
 
   # To add custom fonts to your plugin package, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
@@ -76,4 +79,4 @@ flutter:
   #         weight: 700
   #
   # For details regarding fonts in packages, see
-  # https://flutter.dev/to/font-from-package
+  # https://flutter.dev/custom-fonts/#from-packages
