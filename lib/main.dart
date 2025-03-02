@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:tor_player/lifecycle_manager.dart';
 import 'package:tor_player/routers/go_routes.dart';
 
 void main() {
@@ -14,13 +15,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Tor Player',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
-        useMaterial3: true,
+    return LifecycleManager(
+      child: MaterialApp.router(
+        title: 'Tor Player',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+          useMaterial3: true,
+        ),
+        routerConfig: goRouter,
       ),
-      routerConfig: goRouter,
     );
   }
 }
