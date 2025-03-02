@@ -16,6 +16,72 @@ class StreamApi {
 
   final ApiClient apiClient;
 
+  /// Get torrent stats
+  ///
+  /// Get torrent stats
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [String] infoHash (required):
+  ///   Torrent info hash
+  ///
+  /// * [int] fileIndex (required):
+  ///   File index
+  Future<Response> getTorrentStatsWithHttpInfo(String infoHash, int fileIndex,) async {
+    // ignore: prefer_const_declarations
+    final path = r'/torrents/{infoHash}/files/{fileIndex}/stats'
+      .replaceAll('{infoHash}', infoHash)
+      .replaceAll('{fileIndex}', fileIndex.toString());
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'GET',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// Get torrent stats
+  ///
+  /// Get torrent stats
+  ///
+  /// Parameters:
+  ///
+  /// * [String] infoHash (required):
+  ///   Torrent info hash
+  ///
+  /// * [int] fileIndex (required):
+  ///   File index
+  Future<Stats?> getTorrentStats(String infoHash, int fileIndex,) async {
+    final response = await getTorrentStatsWithHttpInfo(infoHash, fileIndex,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'Stats',) as Stats;
+    
+    }
+    return null;
+  }
+
   /// Stream file
   ///
   /// Stream file from torrent
@@ -34,7 +100,7 @@ class StreamApi {
   ///   File name
   Future<Response> streamFileWithHttpInfo(String infoHash, int fileIndex, String fileName,) async {
     // ignore: prefer_const_declarations
-    final path = r'/stream/{infoHash}/files/{fileIndex}/{fileName}'
+    final path = r'/torrents/{infoHash}/files/{fileIndex}/stream/{fileName}'
       .replaceAll('{infoHash}', infoHash)
       .replaceAll('{fileIndex}', fileIndex.toString())
       .replaceAll('{fileName}', fileName);
@@ -76,79 +142,6 @@ class StreamApi {
   ///   File name
   Future<MultipartFile?> streamFile(String infoHash, int fileIndex, String fileName,) async {
     final response = await streamFileWithHttpInfo(infoHash, fileIndex, fileName,);
-    if (response.statusCode >= HttpStatus.badRequest) {
-      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
-    }
-    // When a remote server returns no body with a status of 204, we shall not decode it.
-    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
-    // FormatException when trying to decode an empty string.
-    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'MultipartFile',) as MultipartFile;
-    
-    }
-    return null;
-  }
-
-  /// Stream video file
-  ///
-  /// Stream video file from torrent
-  ///
-  /// Note: This method returns the HTTP [Response].
-  ///
-  /// Parameters:
-  ///
-  /// * [String] infoHash (required):
-  ///   Torrent info hash
-  ///
-  /// * [int] fileIndex (required):
-  ///   File index
-  ///
-  /// * [String] fileName (required):
-  ///   File name
-  Future<Response> streamVideoFileWithHttpInfo(String infoHash, int fileIndex, String fileName,) async {
-    // ignore: prefer_const_declarations
-    final path = r'/stream/{infoHash}/videos/{fileIndex}/{fileName}'
-      .replaceAll('{infoHash}', infoHash)
-      .replaceAll('{fileIndex}', fileIndex.toString())
-      .replaceAll('{fileName}', fileName);
-
-    // ignore: prefer_final_locals
-    Object? postBody;
-
-    final queryParams = <QueryParam>[];
-    final headerParams = <String, String>{};
-    final formParams = <String, String>{};
-
-    const contentTypes = <String>[];
-
-
-    return apiClient.invokeAPI(
-      path,
-      'GET',
-      queryParams,
-      postBody,
-      headerParams,
-      formParams,
-      contentTypes.isEmpty ? null : contentTypes.first,
-    );
-  }
-
-  /// Stream video file
-  ///
-  /// Stream video file from torrent
-  ///
-  /// Parameters:
-  ///
-  /// * [String] infoHash (required):
-  ///   Torrent info hash
-  ///
-  /// * [int] fileIndex (required):
-  ///   File index
-  ///
-  /// * [String] fileName (required):
-  ///   File name
-  Future<MultipartFile?> streamVideoFile(String infoHash, int fileIndex, String fileName,) async {
-    final response = await streamVideoFileWithHttpInfo(infoHash, fileIndex, fileName,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }

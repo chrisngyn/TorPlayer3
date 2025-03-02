@@ -31,22 +31,3 @@ func (m *Manager) Stats(infoHash InfoHash, fileIndex int) Stats {
 		BytesCompleted:   file.BytesCompleted(),
 	}
 }
-
-func (m *Manager) StatsVideoFile(infoHash InfoHash, configuredIndex int) Stats {
-	file, err := m.GetVideoFile(infoHash, configuredIndex)
-	if err != nil {
-		return Stats{}
-	}
-
-	stats := file.Torrent().Stats()
-
-	return Stats{
-		TotalPeers:       stats.TotalPeers,
-		PendingPeers:     stats.PendingPeers,
-		ActivePeers:      stats.ActivePeers,
-		ConnectedSeeders: stats.ConnectedSeeders,
-		HalfOpenPeers:    stats.HalfOpenPeers,
-		Length:           file.Length(),
-		BytesCompleted:   file.BytesCompleted(),
-	}
-}

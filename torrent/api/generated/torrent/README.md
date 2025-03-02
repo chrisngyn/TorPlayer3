@@ -44,13 +44,12 @@ import 'package:openapi_client/api.dart';
 final api_instance = StreamApi();
 final infoHash = infoHash_example; // String | Torrent info hash
 final fileIndex = 56; // int | File index
-final fileName = fileName_example; // String | File name
 
 try {
-    final result = api_instance.streamFile(infoHash, fileIndex, fileName);
+    final result = api_instance.getTorrentStats(infoHash, fileIndex);
     print(result);
 } catch (e) {
-    print('Exception when calling StreamApi->streamFile: $e\n');
+    print('Exception when calling StreamApi->getTorrentStats: $e\n');
 }
 
 ```
@@ -61,11 +60,10 @@ All URIs are relative to *http://localhost:8080*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*StreamApi* | [**streamFile**](doc//StreamApi.md#streamfile) | **GET** /stream/{infoHash}/files/{fileIndex}/{fileName} | Stream file
-*StreamApi* | [**streamVideoFile**](doc//StreamApi.md#streamvideofile) | **GET** /stream/{infoHash}/videos/{fileIndex}/{fileName} | Stream video file
+*StreamApi* | [**getTorrentStats**](doc//StreamApi.md#gettorrentstats) | **GET** /torrents/{infoHash}/files/{fileIndex}/stats | Get torrent stats
+*StreamApi* | [**streamFile**](doc//StreamApi.md#streamfile) | **GET** /torrents/{infoHash}/files/{fileIndex}/stream/{fileName} | Stream file
 *TorrentApi* | [**addTorrent**](doc//TorrentApi.md#addtorrent) | **POST** /torrents | Add torrent
 *TorrentApi* | [**dropAllTorrents**](doc//TorrentApi.md#dropalltorrents) | **DELETE** /torrents | Drop all torrents
-*TorrentApi* | [**getTorrentStats**](doc//TorrentApi.md#gettorrentstats) | **GET** /torrents/{infoHash}//{fileIndex}/stats | Get torrent stats
 *TorrentApi* | [**listTorrents**](doc//TorrentApi.md#listtorrents) | **GET** /torrents | List torrents
 
 

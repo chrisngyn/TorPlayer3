@@ -74,18 +74,6 @@ func (s *Server) DropAllTorrents(w http.ResponseWriter, r *http.Request, params 
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (s *Server) GetTorrentStats(w http.ResponseWriter, r *http.Request, infoHash InfoHash, fileIndex FileIndex) {
-	ih, err := torrent.InfoHashFromString(infoHash)
-	if err != nil {
-		respondError(w, r, err, http.StatusBadRequest)
-		return
-	}
-
-	stats := s.torManager.Stats(ih, fileIndex)
-
-	render.Respond(w, r, toHTTPStats(stats))
-}
-
 func toHTTPTorrents(torrents []*gotorrent.Torrent) []Torrent {
 	httpTorrents := make([]Torrent, len(torrents))
 	for i, t := range torrents {

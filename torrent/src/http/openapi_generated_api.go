@@ -13,12 +13,6 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Stream file
-	// (GET /stream/{infoHash}/files/{fileIndex}/{fileName})
-	StreamFile(w http.ResponseWriter, r *http.Request, infoHash InfoHash, fileIndex FileIndex, fileName FileName)
-	// Stream video file
-	// (GET /stream/{infoHash}/videos/{fileIndex}/{fileName})
-	StreamVideoFile(w http.ResponseWriter, r *http.Request, infoHash InfoHash, fileIndex FileIndex, fileName FileName)
 	// Drop all torrents
 	// (DELETE /torrents)
 	DropAllTorrents(w http.ResponseWriter, r *http.Request, params DropAllTorrentsParams)
@@ -29,25 +23,16 @@ type ServerInterface interface {
 	// (POST /torrents)
 	AddTorrent(w http.ResponseWriter, r *http.Request, params AddTorrentParams)
 	// Get torrent stats
-	// (GET /torrents/{infoHash}//{fileIndex}/stats)
+	// (GET /torrents/{infoHash}/files/{fileIndex}/stats)
 	GetTorrentStats(w http.ResponseWriter, r *http.Request, infoHash InfoHash, fileIndex FileIndex)
+	// Stream file
+	// (GET /torrents/{infoHash}/files/{fileIndex}/stream/{fileName})
+	StreamFile(w http.ResponseWriter, r *http.Request, infoHash InfoHash, fileIndex FileIndex, fileName FileName)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
-
-// Stream file
-// (GET /stream/{infoHash}/files/{fileIndex}/{fileName})
-func (_ Unimplemented) StreamFile(w http.ResponseWriter, r *http.Request, infoHash InfoHash, fileIndex FileIndex, fileName FileName) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Stream video file
-// (GET /stream/{infoHash}/videos/{fileIndex}/{fileName})
-func (_ Unimplemented) StreamVideoFile(w http.ResponseWriter, r *http.Request, infoHash InfoHash, fileIndex FileIndex, fileName FileName) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
 
 // Drop all torrents
 // (DELETE /torrents)
@@ -68,8 +53,14 @@ func (_ Unimplemented) AddTorrent(w http.ResponseWriter, r *http.Request, params
 }
 
 // Get torrent stats
-// (GET /torrents/{infoHash}//{fileIndex}/stats)
+// (GET /torrents/{infoHash}/files/{fileIndex}/stats)
 func (_ Unimplemented) GetTorrentStats(w http.ResponseWriter, r *http.Request, infoHash InfoHash, fileIndex FileIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Stream file
+// (GET /torrents/{infoHash}/files/{fileIndex}/stream/{fileName})
+func (_ Unimplemented) StreamFile(w http.ResponseWriter, r *http.Request, infoHash InfoHash, fileIndex FileIndex, fileName FileName) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -81,94 +72,6 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
-
-// StreamFile operation middleware
-func (siw *ServerInterfaceWrapper) StreamFile(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	// ------------- Path parameter "infoHash" -------------
-	var infoHash InfoHash
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "infoHash", runtime.ParamLocationPath, chi.URLParam(r, "infoHash"), &infoHash)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "infoHash", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "fileIndex" -------------
-	var fileIndex FileIndex
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "fileIndex", runtime.ParamLocationPath, chi.URLParam(r, "fileIndex"), &fileIndex)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "fileIndex", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "fileName" -------------
-	var fileName FileName
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "fileName", runtime.ParamLocationPath, chi.URLParam(r, "fileName"), &fileName)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "fileName", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.StreamFile(w, r, infoHash, fileIndex, fileName)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
-
-// StreamVideoFile operation middleware
-func (siw *ServerInterfaceWrapper) StreamVideoFile(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var err error
-
-	// ------------- Path parameter "infoHash" -------------
-	var infoHash InfoHash
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "infoHash", runtime.ParamLocationPath, chi.URLParam(r, "infoHash"), &infoHash)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "infoHash", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "fileIndex" -------------
-	var fileIndex FileIndex
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "fileIndex", runtime.ParamLocationPath, chi.URLParam(r, "fileIndex"), &fileIndex)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "fileIndex", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "fileName" -------------
-	var fileName FileName
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "fileName", runtime.ParamLocationPath, chi.URLParam(r, "fileName"), &fileName)
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "fileName", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.StreamVideoFile(w, r, infoHash, fileIndex, fileName)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
-}
 
 // DropAllTorrents operation middleware
 func (siw *ServerInterfaceWrapper) DropAllTorrents(w http.ResponseWriter, r *http.Request) {
@@ -275,6 +178,50 @@ func (siw *ServerInterfaceWrapper) GetTorrentStats(w http.ResponseWriter, r *htt
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetTorrentStats(w, r, infoHash, fileIndex)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// StreamFile operation middleware
+func (siw *ServerInterfaceWrapper) StreamFile(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "infoHash" -------------
+	var infoHash InfoHash
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "infoHash", runtime.ParamLocationPath, chi.URLParam(r, "infoHash"), &infoHash)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "infoHash", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "fileIndex" -------------
+	var fileIndex FileIndex
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "fileIndex", runtime.ParamLocationPath, chi.URLParam(r, "fileIndex"), &fileIndex)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "fileIndex", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "fileName" -------------
+	var fileName FileName
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "fileName", runtime.ParamLocationPath, chi.URLParam(r, "fileName"), &fileName)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "fileName", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.StreamFile(w, r, infoHash, fileIndex, fileName)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -398,12 +345,6 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/stream/{infoHash}/files/{fileIndex}/{fileName}", wrapper.StreamFile)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/stream/{infoHash}/videos/{fileIndex}/{fileName}", wrapper.StreamVideoFile)
-	})
-	r.Group(func(r chi.Router) {
 		r.Delete(options.BaseURL+"/torrents", wrapper.DropAllTorrents)
 	})
 	r.Group(func(r chi.Router) {
@@ -413,7 +354,10 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/torrents", wrapper.AddTorrent)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/torrents/{infoHash}//{fileIndex}/stats", wrapper.GetTorrentStats)
+		r.Get(options.BaseURL+"/torrents/{infoHash}/files/{fileIndex}/stats", wrapper.GetTorrentStats)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/torrents/{infoHash}/files/{fileIndex}/stream/{fileName}", wrapper.StreamFile)
 	})
 
 	return r

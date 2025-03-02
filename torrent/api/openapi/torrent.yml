@@ -17,53 +17,7 @@ tags:
     x-displayName: "Streaming"
 
 paths:
-  /stream/{infoHash}/videos/{fileIndex}/{fileName}:
-    get:
-      operationId: streamVideoFile
-      tags:
-        - stream
-      summary: "Stream video file"
-      description: "Stream video file from torrent"
-      parameters:
-        - $ref: "#/components/parameters/infoHash"
-        - $ref: "#/components/parameters/fileIndex"
-        - $ref: "#/components/parameters/fileName"
-      responses:
-        '200':
-          description: "Video file stream"
-          content:
-            video/mp4:
-              schema:
-                type: string
-                format: binary
-        '404':
-          description: "File not found"
-        '500':
-          description: "Internal server error"
-
-  /stream/{infoHash}/files/{fileIndex}/{fileName}:
-    get:
-      operationId: streamFile
-      tags:
-        - stream
-      summary: "Stream file"
-      description: "Stream file from torrent"
-      parameters:
-        - $ref: "#/components/parameters/infoHash"
-        - $ref: "#/components/parameters/fileIndex"
-        - $ref: "#/components/parameters/fileName"
-      responses:
-        '200':
-          description: "File stream"
-          content:
-            application/octet-stream:
-              schema:
-                type: string
-                format: binary
-        '404':
-          description: "File not found"
-        '500':
-          description: "Internal server error"
+  
 
   /torrents:
     get:
@@ -151,12 +105,35 @@ paths:
         '500':
           description: "Internal server error"
 
+  /torrents/{infoHash}/files/{fileIndex}/stream/{fileName}:
+    get:
+      operationId: streamFile
+      tags:
+        - stream
+      summary: "Stream file"
+      description: "Stream file from torrent"
+      parameters:
+        - $ref: "#/components/parameters/infoHash"
+        - $ref: "#/components/parameters/fileIndex"
+        - $ref: "#/components/parameters/fileName"
+      responses:
+        '200':
+          description: "File stream"
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: "File not found"
+        '500':
+          description: "Internal server error"
 
-  /torrents/{infoHash}//{fileIndex}/stats:
+  /torrents/{infoHash}/files/{fileIndex}/stats:
     get:
       operationId: getTorrentStats
       tags:
-        - torrent
+        - stream
       summary: "Get torrent stats"
       description: "Get torrent stats"
       parameters:

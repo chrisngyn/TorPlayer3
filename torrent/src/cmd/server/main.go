@@ -24,8 +24,8 @@ func main() {
 
 	slog.Info("Starting torrent server", slog.String("dataDir", dataDir))
 	config := torrent.Config{
-		DataDir:         dataDir,
-		Debug:           true,
+		DataDir: dataDir,
+		Debug:   true,
 	}
 	_torManager = torrent.NewManager(config)
 

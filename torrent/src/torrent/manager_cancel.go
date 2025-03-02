@@ -9,7 +9,6 @@ func (m *Manager) DropAll() {
 	for _, tor := range m.client.Torrents() {
 		tor.Drop()
 	}
-	return
 }
 
 func (m *Manager) DeleteAll() error {
