@@ -1,5 +1,8 @@
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tor_player/routers/app_routes.dart';
+import 'package:torrent/torrent.dart' as torrent;
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -12,7 +15,10 @@ class _HomeViewState extends State<HomeView> {
   late final TextEditingController _textEditingController;
 
   bool _dragging = false;
-  DropItem? item;
+  DropItem? _item;
+
+  bool _adding = false;
+  Exception? _error;
 
   @override
   void initState() {
@@ -27,17 +33,46 @@ class _HomeViewState extends State<HomeView> {
   }
 
   void _addTorrent() async {
-    // final resp = await torrent.LibTorrent().torrentApi.addTorrent(
-    //       torrent.AddTorrentRequest(
-    //         link: _textEditingController.text,
-    //       ),
-    //       deleteOthers: true,
-    //     );
+    setState(() {
+      _adding = true;
+    });
+    try {
+      final resp = await torrent.LibTorrent().torrentApi.addTorrent(
+            torrent.AddTorrentRequest(
+              link: _textEditingController.text,
+            ),
+            deleteOthers: false,
+          );
+      debugPrint('Added torrent: $resp');
 
-    // setState(() {
-    //   _infoHash = resp?.infoHash;
-    //   _textEditingController.clear();
-    // });
+      setState(() {
+        _error = null;
+        _textEditingController.clear();
+        _item = null;
+      });
+
+      if (resp == null) {
+        return;
+      }
+
+      if (!mounted) {
+        return;
+      }
+
+      await context.pushNamed(
+        AppRoutes.torrentDetail,
+        pathParameters: {
+          'infoHash': resp.infoHash,
+        },
+      );
+    } catch (e) {
+      debugPrint('Error adding torrent: $e');
+      _error = e as Exception?;
+    } finally {
+      setState(() {
+        _adding = false;
+      });
+    }
   }
 
   @override
@@ -58,9 +93,10 @@ class _HomeViewState extends State<HomeView> {
                   controller: _textEditingController,
                   decoration: const InputDecoration(
                     labelText: 'Magnet Link or Torrent Link',
-                    // alignLabelWithHint: true,
                     hintText: 'Enter a magnet link or torrent link',
+                    isCollapsed: true,
                   ),
+                  maxLines: null,
                 ),
               ),
               spacerSmall,
@@ -69,7 +105,7 @@ class _HomeViewState extends State<HomeView> {
               DropTarget(
                 onDragDone: (detail) {
                   setState(() {
-                    item = detail.files.first;
+                    _item = detail.files.first;
                   });
                 },
                 onDragEntered: (detail) {
@@ -100,9 +136,20 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ),
               spacerSmall,
-              ElevatedButton(
+              if (_error != null) ...[
+                Text('Error adding torrent: $_error'),
+                spacerSmall,
+              ],
+              ElevatedButton.icon(
                 onPressed: _addTorrent,
-                child: const Text('Add Torrent'),
+                label: const Text('Add Torrent'),
+                icon: _adding
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(),
+                      )
+                    : const Icon(Icons.add),
               ),
             ],
           ),

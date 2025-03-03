@@ -31,8 +31,8 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
           selectedIndex: _calculateSelectedIndex(context),
           onDestinationSelected: (index) =>
               _onDestinationSelected(context, index),
-          child: child,
           extended: constraints.maxWidth > 600,
+          child: child,
         );
       }
     });
