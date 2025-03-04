@@ -31,6 +31,7 @@ part 'auth/http_bearer_auth.dart';
 part 'api/stream_api.dart';
 part 'api/torrent_api.dart';
 
+part 'model/add_torrent200_response.dart';
 part 'model/add_torrent_request.dart';
 part 'model/file.dart';
 part 'model/list_torrents200_response.dart';

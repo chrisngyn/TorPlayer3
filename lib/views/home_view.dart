@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -20,9 +22,16 @@ class _HomeViewState extends State<HomeView> {
   bool _adding = false;
   Exception? _error;
 
+  bool _hasContent = false;
+
   @override
   void initState() {
     _textEditingController = TextEditingController();
+    _textEditingController.addListener(() {
+      setState(() {
+        _hasContent = _textEditingController.text.isNotEmpty || _item != null;
+      });
+    });
     super.initState();
   }
 
@@ -36,12 +45,28 @@ class _HomeViewState extends State<HomeView> {
     setState(() {
       _adding = true;
     });
+
+    if (!_hasContent) {
+      setState(() {
+        _error = Exception('No content to add');
+        _adding = false;
+      });
+      return;
+    }
+
     try {
+      String content;
+      if (_item != null) {
+        final bytes = await _item!.readAsBytes();
+        content = base64Encode(bytes);
+      } else {
+        content = _textEditingController.text;
+      }
+
       final resp = await torrent.LibTorrent().torrentApi.addTorrent(
             torrent.AddTorrentRequest(
-              link: _textEditingController.text,
+              content: content,
             ),
-            deleteOthers: false,
           );
       debugPrint('Added torrent: $resp');
 
@@ -106,6 +131,7 @@ class _HomeViewState extends State<HomeView> {
                 onDragDone: (detail) {
                   setState(() {
                     _item = detail.files.first;
+                     _hasContent = _textEditingController.text.isNotEmpty || _item != null;
                   });
                 },
                 onDragEntered: (detail) {
@@ -141,7 +167,7 @@ class _HomeViewState extends State<HomeView> {
                 spacerSmall,
               ],
               ElevatedButton.icon(
-                onPressed: _addTorrent,
+                onPressed: _hasContent ? _addTorrent : null,
                 label: const Text('Add Torrent'),
                 icon: _adding
                     ? const SizedBox(

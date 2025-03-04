@@ -25,13 +25,7 @@ class TorrentApi {
   /// Parameters:
   ///
   /// * [AddTorrentRequest] addTorrentRequest (required):
-  ///
-  /// * [bool] dropOthers:
-  ///   Drop other torrents
-  ///
-  /// * [bool] deleteOthers:
-  ///   Delete other torrents
-  Future<Response> addTorrentWithHttpInfo(AddTorrentRequest addTorrentRequest, { bool? dropOthers, bool? deleteOthers, }) async {
+  Future<Response> addTorrentWithHttpInfo(AddTorrentRequest addTorrentRequest,) async {
     // ignore: prefer_const_declarations
     final path = r'/torrents';
 
@@ -41,13 +35,6 @@ class TorrentApi {
     final queryParams = <QueryParam>[];
     final headerParams = <String, String>{};
     final formParams = <String, String>{};
-
-    if (dropOthers != null) {
-      queryParams.addAll(_queryParams('', 'dropOthers', dropOthers));
-    }
-    if (deleteOthers != null) {
-      queryParams.addAll(_queryParams('', 'deleteOthers', deleteOthers));
-    }
 
     const contentTypes = <String>['application/json'];
 
@@ -70,14 +57,8 @@ class TorrentApi {
   /// Parameters:
   ///
   /// * [AddTorrentRequest] addTorrentRequest (required):
-  ///
-  /// * [bool] dropOthers:
-  ///   Drop other torrents
-  ///
-  /// * [bool] deleteOthers:
-  ///   Delete other torrents
-  Future<Torrent?> addTorrent(AddTorrentRequest addTorrentRequest, { bool? dropOthers, bool? deleteOthers, }) async {
-    final response = await addTorrentWithHttpInfo(addTorrentRequest,  dropOthers: dropOthers, deleteOthers: deleteOthers, );
+  Future<AddTorrent200Response?> addTorrent(AddTorrentRequest addTorrentRequest,) async {
+    final response = await addTorrentWithHttpInfo(addTorrentRequest,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -85,7 +66,7 @@ class TorrentApi {
     // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
     // FormatException when trying to decode an empty string.
     if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'Torrent',) as Torrent;
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'AddTorrent200Response',) as AddTorrent200Response;
     
     }
     return null;

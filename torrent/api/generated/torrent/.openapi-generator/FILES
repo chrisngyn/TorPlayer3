@@ -2,6 +2,7 @@
 .travis.yml
 README.md
 analysis_options.yaml
+doc/AddTorrent200Response.md
 doc/AddTorrentRequest.md
 doc/File.md
 doc/ListTorrents200Response.md
@@ -21,6 +22,7 @@ lib/auth/authentication.dart
 lib/auth/http_basic_auth.dart
 lib/auth/http_bearer_auth.dart
 lib/auth/oauth.dart
+lib/model/add_torrent200_response.dart
 lib/model/add_torrent_request.dart
 lib/model/file.dart
 lib/model/list_torrents200_response.dart

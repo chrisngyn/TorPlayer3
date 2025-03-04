@@ -18,39 +18,27 @@ func (s *Server) ListTorrents(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (s *Server) AddTorrent(w http.ResponseWriter, r *http.Request, params AddTorrentParams) {
-	dropOthers, deleteOthers := false, false
-	if params.DropOthers != nil {
-		dropOthers = *params.DropOthers
-	}
-	if params.DeleteOthers != nil {
-		deleteOthers = *params.DeleteOthers
-	}
-
+func (s *Server) AddTorrent(w http.ResponseWriter, r *http.Request) {
 	var requestBody AddTorrentJSONRequestBody
 	if err := render.DecodeJSON(r.Body, &requestBody); err != nil {
 		respondError(w, r, err, http.StatusBadRequest)
 		return
 	}
 
-	if requestBody.Link == "" {
+	if requestBody.Content == "" {
 		respondError(w, r, errors.New("link is required"), http.StatusBadRequest)
 		return
 	}
 
-	infoHash, err := s.torManager.AddFromLink(requestBody.Link, dropOthers, deleteOthers)
+	infoHash, err := s.torManager.Add(requestBody.Content)
 	if err != nil {
 		respondError(w, r, err, http.StatusInternalServerError)
 		return
 	}
 
-	torr, ok := s.torManager.GetTorrent(infoHash)
-	if !ok {
-		respondError(w, r, errors.New("failed to get torrent"), http.StatusInternalServerError)
-		return
-	}
-
-	render.Respond(w, r, toHTTPTorrent(torr))
+	render.Respond(w, r, map[string]any{
+		"infoHash": infoHash.String(),
+	})
 }
 
 func (s *Server) DropAllTorrents(w http.ResponseWriter, r *http.Request, params DropAllTorrentsParams) {

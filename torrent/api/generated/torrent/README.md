@@ -69,6 +69,7 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [AddTorrent200Response](doc//AddTorrent200Response.md)
  - [AddTorrentRequest](doc//AddTorrentRequest.md)
  - [File](doc//File.md)
  - [ListTorrents200Response](doc//ListTorrents200Response.md)

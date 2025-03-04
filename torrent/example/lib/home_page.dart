@@ -50,9 +50,8 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () async {
                   final resp = await torrent.LibTorrent().torrentApi.addTorrent(
                         torrent.AddTorrentRequest(
-                          link: _textEditingController.text,
+                          content: _textEditingController.text,
                         ),
-                        deleteOthers: true,
                       );
 
                   setState(() {

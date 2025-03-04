@@ -48,19 +48,6 @@ paths:
         - torrent
       summary: "Add torrent"
       description: "Add torrent"
-      parameters:
-        - name: dropOthers
-          in: query
-          description: "Drop other torrents"
-          required: false
-          schema:
-            type: boolean
-        - name: deleteOthers
-          in: query
-          description: "Delete other torrents"
-          required: false
-          schema:
-            type: boolean
       requestBody:
         required: true
         content:
@@ -69,18 +56,23 @@ paths:
               title: "AddTorrentRequest"
               type: object
               properties:
-                link:
+                content:
                   type: string
-                  description: "Torrent link or magnet"
+                  description: "Torrent link or magnet or torrent file content"
               required:
-                - link
+                - content
       responses:
         '200':
-          description: "Torrent details"
+          description: "Add torrent response"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Torrent"
+                type: object
+                properties:
+                  infoHash:
+                    type: string
+                    description: "Torrent info hash"
+                required: [ "infoHash" ]
         '400':
           description: "Invalid request"
         '500':

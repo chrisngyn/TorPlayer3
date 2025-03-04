@@ -10,37 +10,37 @@
 
 part of openapi.api;
 
-class AddTorrentRequest {
-  /// Returns a new [AddTorrentRequest] instance.
-  AddTorrentRequest({
-    required this.content,
+class AddTorrent200Response {
+  /// Returns a new [AddTorrent200Response] instance.
+  AddTorrent200Response({
+    required this.infoHash,
   });
 
-  /// Torrent link or magnet or torrent file content
-  String content;
+  /// Torrent info hash
+  String infoHash;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is AddTorrentRequest &&
-    other.content == content;
+  bool operator ==(Object other) => identical(this, other) || other is AddTorrent200Response &&
+    other.infoHash == infoHash;
 
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
-    (content.hashCode);
+    (infoHash.hashCode);
 
   @override
-  String toString() => 'AddTorrentRequest[content=$content]';
+  String toString() => 'AddTorrent200Response[infoHash=$infoHash]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-      json[r'content'] = this.content;
+      json[r'infoHash'] = this.infoHash;
     return json;
   }
 
-  /// Returns a new [AddTorrentRequest] instance and imports its values from
+  /// Returns a new [AddTorrent200Response] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static AddTorrentRequest? fromJson(dynamic value) {
+  static AddTorrent200Response? fromJson(dynamic value) {
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
@@ -49,24 +49,24 @@ class AddTorrentRequest {
       // Note 2: this code is stripped in release mode!
       assert(() {
         requiredKeys.forEach((key) {
-          assert(json.containsKey(key), 'Required key "AddTorrentRequest[$key]" is missing from JSON.');
-          assert(json[key] != null, 'Required key "AddTorrentRequest[$key]" has a null value in JSON.');
+          assert(json.containsKey(key), 'Required key "AddTorrent200Response[$key]" is missing from JSON.');
+          assert(json[key] != null, 'Required key "AddTorrent200Response[$key]" has a null value in JSON.');
         });
         return true;
       }());
 
-      return AddTorrentRequest(
-        content: mapValueOfType<String>(json, r'content')!,
+      return AddTorrent200Response(
+        infoHash: mapValueOfType<String>(json, r'infoHash')!,
       );
     }
     return null;
   }
 
-  static List<AddTorrentRequest> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <AddTorrentRequest>[];
+  static List<AddTorrent200Response> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <AddTorrent200Response>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = AddTorrentRequest.fromJson(row);
+        final value = AddTorrent200Response.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -75,12 +75,12 @@ class AddTorrentRequest {
     return result.toList(growable: growable);
   }
 
-  static Map<String, AddTorrentRequest> mapFromJson(dynamic json) {
-    final map = <String, AddTorrentRequest>{};
+  static Map<String, AddTorrent200Response> mapFromJson(dynamic json) {
+    final map = <String, AddTorrent200Response>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = AddTorrentRequest.fromJson(entry.value);
+        final value = AddTorrent200Response.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -89,14 +89,14 @@ class AddTorrentRequest {
     return map;
   }
 
-  // maps a json object with a list of AddTorrentRequest-objects as value to a dart map
-  static Map<String, List<AddTorrentRequest>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<AddTorrentRequest>>{};
+  // maps a json object with a list of AddTorrent200Response-objects as value to a dart map
+  static Map<String, List<AddTorrent200Response>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<AddTorrent200Response>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = AddTorrentRequest.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = AddTorrent200Response.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
@@ -104,7 +104,7 @@ class AddTorrentRequest {
 
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
-    'content',
+    'infoHash',
   };
 }
 

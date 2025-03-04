@@ -15,7 +15,7 @@ Method | HTTP request | Description
 
 
 # **addTorrent**
-> Torrent addTorrent(addTorrentRequest, dropOthers, deleteOthers)
+> AddTorrent200Response addTorrent(addTorrentRequest)
 
 Add torrent
 
@@ -27,11 +27,9 @@ import 'package:openapi_client/api.dart';
 
 final api_instance = TorrentApi();
 final addTorrentRequest = AddTorrentRequest(); // AddTorrentRequest | 
-final dropOthers = true; // bool | Drop other torrents
-final deleteOthers = true; // bool | Delete other torrents
 
 try {
-    final result = api_instance.addTorrent(addTorrentRequest, dropOthers, deleteOthers);
+    final result = api_instance.addTorrent(addTorrentRequest);
     print(result);
 } catch (e) {
     print('Exception when calling TorrentApi->addTorrent: $e\n');
@@ -43,12 +41,10 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **addTorrentRequest** | [**AddTorrentRequest**](AddTorrentRequest.md)|  | 
- **dropOthers** | **bool**| Drop other torrents | [optional] 
- **deleteOthers** | **bool**| Delete other torrents | [optional] 
 
 ### Return type
 
-[**Torrent**](Torrent.md)
+[**AddTorrent200Response**](AddTorrent200Response.md)
 
 ### Authorization
 

@@ -58,7 +58,7 @@ class _LifecycleManagerState extends State<LifecycleManager>
   Future<void> _initServices() async {
     // Initialize services
     _dataDirPath = '/home/chrisngyn/Downloads/TorPlayer';
-    torrent.LibTorrent().start(_dataDirPath, 1);
+    torrent.LibTorrent().start(_dataDirPath, 0);
     _isInitialized = true;
   }
 
