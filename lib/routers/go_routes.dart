@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tor_player/routers/app_routes.dart';
 import 'package:tor_player/routers/scaffold_with_nested_navigation.dart';
 import 'package:tor_player/views/home_view.dart';
+import 'package:tor_player/views/player/player_view.dart';
 import 'package:tor_player/views/torrent_detail_view.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
@@ -36,7 +37,16 @@ final goRouter = GoRouter(
             final infoHash = state.pathParameters['infoHash']!;
             return TorrentDetailView(infoHash: infoHash);
           },
-        )
+        ),
+        GoRoute(
+          name: AppRoutes.player,
+          path: "/torrents/:infoHash/files/:fileIndex",
+          builder: (context, state) {
+            final infoHash = state.pathParameters['infoHash']!;
+            final fileIndex = int.parse(state.pathParameters['fileIndex']!);
+            return PlayerView(infoHash: infoHash, fileIndex: fileIndex);
+          },
+        ),
       ],
     )
   ],

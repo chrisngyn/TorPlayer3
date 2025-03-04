@@ -66,8 +66,9 @@ class LibTorrent {
     _torrent.Stop();
   }
 
-  String getStreamVideoURL(String infoHash, int fileIndex, String fileName) {
-    return Uri.encodeFull('http://localhost:$_listenPort/stream/$infoHash/videos/$fileIndex/$fileName');
+  String getStreamURL(String infoHash, int fileIndex, String fileName) {
+    final name = fileName.split('/').last;
+    return Uri.encodeFull('http://localhost:$_listenPort/torrents/$infoHash/files/$fileIndex/stream/$name');
   }
 }
 

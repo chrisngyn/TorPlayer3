@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pretty_bytes/pretty_bytes.dart';
+import 'package:tor_player/routers/app_routes.dart';
 
 import 'package:torrent/torrent.dart' as torrent;
 
@@ -19,7 +21,8 @@ class TorrentDetailView extends StatelessWidget {
       ),
       body: FutureBuilder<torrent.Torrent>(
         future: () async {
-          final resp = await torrent.LibTorrent().torrentApi.getTorrent(infoHash);
+          final resp =
+              await torrent.LibTorrent().torrentApi.getTorrent(infoHash);
           if (resp == null) {
             throw Exception('Failed to fetch torrent');
           }
@@ -54,7 +57,7 @@ class TorrentDetailView extends StatelessWidget {
                 const SizedBox(height: 10),
                 Text('Size: ${prettyBytes(torrent.size.toDouble())}'),
                 const SizedBox(height: 10),
-                filesSection(torrent),
+                filesSection(context, torrent),
               ],
             ),
           );
@@ -63,7 +66,7 @@ class TorrentDetailView extends StatelessWidget {
     );
   }
 
-  Widget filesSection(torrent.Torrent torrentFile) {
+  Widget filesSection(BuildContext context, torrent.Torrent torrentFile) {
     if (torrentFile.files.isEmpty) {
       return const Text('No files available');
     }
@@ -84,22 +87,29 @@ class TorrentDetailView extends StatelessWidget {
           DataCell(Text(prettyBytes(file.size.toDouble()))),
           DataCell(Row(
             children: [
-              IconButton(
-                icon: const Icon(Icons.play_arrow),
-                onPressed: () {
-                  // Add your play action here
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.download),
-                onPressed: () {
-                  // Add your download action here
-                },
-              ),
+              if (isVideoFile(file.name))
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    context.pushNamed(
+                      AppRoutes.player,
+                      pathParameters: {
+                        'infoHash': infoHash,
+                        'fileIndex': index.toString(),
+                      },
+                    );
+                  },
+                  icon: const Icon(Icons.play_arrow),
+                  label: const Text('Play'),
+                ),
             ],
           )),
         ]);
       }).toList(),
     );
   }
+}
+
+bool isVideoFile(String fileName) {
+  final ext = fileName.split('.').last;
+  return ext == 'mp4' || ext == 'mkv' || ext == 'webm';
 }
