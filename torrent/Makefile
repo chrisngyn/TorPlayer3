@@ -8,3 +8,4 @@ openapi-http:
 .PHONY: openapi-dart-client
 openapi-dart-client:
 	@./scripts/openapi-dart-client.sh torrent api/generated/torrent
+	rm -rf api/generated/torrent/test

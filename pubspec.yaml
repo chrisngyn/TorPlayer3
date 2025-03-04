@@ -40,6 +40,7 @@ dependencies:
   desktop_drop: ^0.5.0
   torrent:
     path: ./torrent
+  pretty_bytes: ^6.2.0
 
 dev_dependencies:
   flutter_test:

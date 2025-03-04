@@ -97,6 +97,27 @@ paths:
         '500':
           description: "Internal server error"
 
+  /torrents/{infoHash}:
+    get: 
+      operationId: getTorrent
+      tags:
+        - torrent
+      summary: "Get torrent"
+      description: "Get torrent by info hash"
+      parameters:
+        - $ref: "#/components/parameters/infoHash"
+      responses:
+        '200':
+          description: "Torrent"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Torrent"
+        '400':
+          description: "Torrent not found"
+        '500':
+          description: "Internal server error"
+
   /torrents/{infoHash}/files/{fileIndex}/stream/{fileName}:
     get:
       operationId: streamFile

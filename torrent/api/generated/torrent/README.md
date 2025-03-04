@@ -64,6 +64,7 @@ Class | Method | HTTP request | Description
 *StreamApi* | [**streamFile**](doc//StreamApi.md#streamfile) | **GET** /torrents/{infoHash}/files/{fileIndex}/stream/{fileName} | Stream file
 *TorrentApi* | [**addTorrent**](doc//TorrentApi.md#addtorrent) | **POST** /torrents | Add torrent
 *TorrentApi* | [**dropAllTorrents**](doc//TorrentApi.md#dropalltorrents) | **DELETE** /torrents | Drop all torrents
+*TorrentApi* | [**getTorrent**](doc//TorrentApi.md#gettorrent) | **GET** /torrents/{infoHash} | Get torrent
 *TorrentApi* | [**listTorrents**](doc//TorrentApi.md#listtorrents) | **GET** /torrents | List torrents
 
 

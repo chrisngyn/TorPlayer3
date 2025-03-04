@@ -126,6 +126,65 @@ class TorrentApi {
     }
   }
 
+  /// Get torrent
+  ///
+  /// Get torrent by info hash
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [String] infoHash (required):
+  ///   Torrent info hash
+  Future<Response> getTorrentWithHttpInfo(String infoHash,) async {
+    // ignore: prefer_const_declarations
+    final path = r'/torrents/{infoHash}'
+      .replaceAll('{infoHash}', infoHash);
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'GET',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// Get torrent
+  ///
+  /// Get torrent by info hash
+  ///
+  /// Parameters:
+  ///
+  /// * [String] infoHash (required):
+  ///   Torrent info hash
+  Future<Torrent?> getTorrent(String infoHash,) async {
+    final response = await getTorrentWithHttpInfo(infoHash,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'Torrent',) as Torrent;
+    
+    }
+    return null;
+  }
+
   /// List torrents
   ///
   /// List of torrents

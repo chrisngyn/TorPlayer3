@@ -22,6 +22,9 @@ type ServerInterface interface {
 	// Add torrent
 	// (POST /torrents)
 	AddTorrent(w http.ResponseWriter, r *http.Request)
+	// Get torrent
+	// (GET /torrents/{infoHash})
+	GetTorrent(w http.ResponseWriter, r *http.Request, infoHash InfoHash)
 	// Get torrent stats
 	// (GET /torrents/{infoHash}/files/{fileIndex}/stats)
 	GetTorrentStats(w http.ResponseWriter, r *http.Request, infoHash InfoHash, fileIndex FileIndex)
@@ -49,6 +52,12 @@ func (_ Unimplemented) ListTorrents(w http.ResponseWriter, r *http.Request) {
 // Add torrent
 // (POST /torrents)
 func (_ Unimplemented) AddTorrent(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get torrent
+// (GET /torrents/{infoHash})
+func (_ Unimplemented) GetTorrent(w http.ResponseWriter, r *http.Request, infoHash InfoHash) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -119,6 +128,31 @@ func (siw *ServerInterfaceWrapper) AddTorrent(w http.ResponseWriter, r *http.Req
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AddTorrent(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetTorrent operation middleware
+func (siw *ServerInterfaceWrapper) GetTorrent(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "infoHash" -------------
+	var infoHash InfoHash
+
+	err = runtime.BindStyledParameterWithOptions("simple", "infoHash", chi.URLParam(r, "infoHash"), &infoHash, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "infoHash", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetTorrent(w, r, infoHash)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -326,6 +360,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/torrents", wrapper.AddTorrent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/torrents/{infoHash}", wrapper.GetTorrent)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/torrents/{infoHash}/files/{fileIndex}/stats", wrapper.GetTorrentStats)

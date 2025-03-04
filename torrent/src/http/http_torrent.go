@@ -41,6 +41,21 @@ func (s *Server) AddTorrent(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (s *Server) GetTorrent(w http.ResponseWriter, r *http.Request, infoHash InfoHash) {
+	hash, err := torrent.InfoHashFromString(string(infoHash))
+	if err != nil {
+		respondError(w, r, err, http.StatusBadRequest)
+		return
+	}
+	torrent, ok := s.torManager.GetTorrent(hash)
+	if !ok {
+		respondError(w, r, errors.New("torrent not found"), http.StatusNotFound)
+		return
+	}
+
+	render.Respond(w, r, toHTTPTorrent(torrent))
+}
+
 func (s *Server) DropAllTorrents(w http.ResponseWriter, r *http.Request, params DropAllTorrentsParams) {
 	deleteAllTorrents := false
 	if params.Delete != nil {

@@ -11,6 +11,7 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**addTorrent**](TorrentApi.md#addtorrent) | **POST** /torrents | Add torrent
 [**dropAllTorrents**](TorrentApi.md#dropalltorrents) | **DELETE** /torrents | Drop all torrents
+[**getTorrent**](TorrentApi.md#gettorrent) | **GET** /torrents/{infoHash} | Get torrent
 [**listTorrents**](TorrentApi.md#listtorrents) | **GET** /torrents | List torrents
 
 
@@ -96,6 +97,49 @@ No authorization required
 
  - **Content-Type**: Not defined
  - **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getTorrent**
+> Torrent getTorrent(infoHash)
+
+Get torrent
+
+Get torrent by info hash
+
+### Example
+```dart
+import 'package:openapi_client/api.dart';
+
+final api_instance = TorrentApi();
+final infoHash = infoHash_example; // String | Torrent info hash
+
+try {
+    final result = api_instance.getTorrent(infoHash);
+    print(result);
+} catch (e) {
+    print('Exception when calling TorrentApi->getTorrent: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **infoHash** | **String**| Torrent info hash | 
+
+### Return type
+
+[**Torrent**](Torrent.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
