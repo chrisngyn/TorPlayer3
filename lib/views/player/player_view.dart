@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -52,34 +55,74 @@ class PlayerView extends StatelessWidget {
         return const SizedBox();
       }
 
-      final file = torrent.files[fileIndex];
-      return torrentFile(file);
+      return torrentVideo(torrent.files, fileIndex);
     });
   }
 
-  Widget torrentFile(torrent.File file) {
+  Widget torrentVideo(List<torrent.File> files, int videoIndex) {
+    final videoFile = files[videoIndex];
     final videoURL = torrent.LibTorrent().getStreamURL(
       infoHash,
       fileIndex,
-      file.name,
+      videoFile.name,
     );
+
+    final List<UriSubtitle> uriSubittles = [];
+    for (final (i, file) in files.indexed) {
+      if (isSubitleFile(file.name)) {
+        uriSubittles.add(UriSubtitle(
+          name: file.name.split("/").last,
+          url: torrent.LibTorrent().getStreamURL(
+            infoHash,
+            i,
+            file.name,
+          ),
+        ));
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Name: ${file.name}'),
+        Text('Name: ${videoFile.name}'),
         const SizedBox(height: 10),
         VideoPlayer(
           url: videoURL,
+          uriSubtitles: uriSubittles,
         ),
       ],
     );
   }
 }
 
+bool isSubitleFile(String name) {
+  for (final ext in ['srt', 'vtt', 'webm', 'ass']) {
+    if (name.endsWith(ext)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+class UriSubtitle {
+  const UriSubtitle({
+    required this.name,
+    required this.url,
+  });
+
+  final String name;
+  final String url;
+}
+
 class VideoPlayer extends StatefulWidget {
-  const VideoPlayer({super.key, required this.url});
+  const VideoPlayer({
+    super.key,
+    required this.url,
+    this.uriSubtitles = const [],
+  });
 
   final String url;
+  final List<UriSubtitle> uriSubtitles;
 
   @override
   State<VideoPlayer> createState() => _VideoPlayerState();
@@ -102,7 +145,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
 
     player.stream.tracks.listen((tracks) {
       setState(() {
-        _availableTracks = tracks;
+        _availableTracks ??= tracks;
       });
     });
 
@@ -143,7 +186,14 @@ class _VideoPlayerState extends State<VideoPlayer> {
         const SizedBox(height: 10),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: availableTracks(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              availableTracks(),
+              const SizedBox(height: 10),
+              uriSubtitles(),
+            ],
+          ),
         ),
       ],
     );
@@ -222,5 +272,44 @@ class _VideoPlayerState extends State<VideoPlayer> {
         ),
       ],
     );
+  }
+
+  Widget uriSubtitles() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Subtitles:'),
+        Wrap(
+          alignment: WrapAlignment.start,
+          // direction: Axis.horizontal,
+          crossAxisAlignment: WrapCrossAlignment.start,
+          spacing: 10,
+          runSpacing: 10,
+          children: widget.uriSubtitles.map((uriSubtitle) {
+            return LoadingElevatedButton(
+              text: uriSubtitle.name,
+              onPressed: () async {
+                _selectUriSubtitle(uriSubtitle);
+              },
+              disable: _selectedTrack?.subtitle.title == uriSubtitle.name,
+              icon: Icons.subtitles,
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _selectUriSubtitle(UriSubtitle subtitle) async {
+    // download subtitle file and got content using http package
+    HttpClient httpClient = HttpClient();
+    HttpClientRequest request =
+        await httpClient.getUrl(Uri.parse(subtitle.url));
+    HttpClientResponse response = await request.close();
+    if (response.statusCode == 200) {
+      String content = await utf8.decodeStream(response);
+      player
+          .setSubtitleTrack(SubtitleTrack.data(content, title: subtitle.name));
+    }
   }
 }
