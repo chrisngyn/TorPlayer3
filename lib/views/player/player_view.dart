@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:tor_player/views/components/buttons.dart';
 
 import 'package:torrent/torrent.dart' as torrent;
 
@@ -88,12 +89,27 @@ class _VideoPlayerState extends State<VideoPlayer> {
   late final player = Player();
   late final controller = VideoController(player);
 
+  Track? _selectedTrack;
+  Tracks? _availableTracks;
+
   @override
   void initState() {
     super.initState();
 
     player.stream.log.listen((log) {
       debugPrint('Player log: $log');
+    });
+
+    player.stream.tracks.listen((tracks) {
+      setState(() {
+        _availableTracks = tracks;
+      });
+    });
+
+    player.stream.track.listen((track) {
+      setState(() {
+        _selectedTrack = track;
+      });
     });
 
     // because the torrent file is not ready yet, retry after 3 seconds
@@ -120,6 +136,20 @@ class _VideoPlayerState extends State<VideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        video(),
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: availableTracks(),
+        ),
+      ],
+    );
+  }
+
+  Widget video() {
     return LayoutBuilder(builder: (context, constraints) {
       final isWideScreen = constraints.maxWidth > 600;
       return Center(
@@ -138,5 +168,59 @@ class _VideoPlayerState extends State<VideoPlayer> {
         ),
       );
     });
+  }
+
+  Widget availableTracks() {
+    if (_availableTracks == null) {
+      return const SizedBox();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Available videos:'),
+        Wrap(
+          direction: Axis.horizontal,
+          spacing: 10,
+          children: _availableTracks!.video.map((track) {
+            return elevatedButton(
+              text: track.title ?? track.id,
+              onPressed: () {
+                player.setVideoTrack(track);
+              },
+              disable: _selectedTrack?.video.id == track.id,
+            );
+          }).toList(),
+        ),
+        const Text('Available audios:'),
+        Wrap(
+          direction: Axis.horizontal,
+          spacing: 10,
+          children: _availableTracks!.audio.map((track) {
+            return elevatedButton(
+              text: track.title ?? track.id,
+              onPressed: () {
+                player.setAudioTrack(track);
+              },
+              disable: _selectedTrack?.audio.id == track.id,
+            );
+          }).toList(),
+        ),
+        const Text('Available subitles:'),
+        Wrap(
+          direction: Axis.horizontal,
+          spacing: 10,
+          children: _availableTracks!.subtitle.map((track) {
+            return elevatedButton(
+              text: track.title ?? track.id,
+              onPressed: () {
+                player.setSubtitleTrack(track);
+              },
+              disable: _selectedTrack?.subtitle.id == track.id,
+            );
+          }).toList(),
+        ),
+      ],
+    );
   }
 }
