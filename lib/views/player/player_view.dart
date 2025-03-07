@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -132,6 +133,9 @@ class _VideoPlayerState extends State<VideoPlayer> {
   late final player = Player();
   late final controller = VideoController(player);
 
+  late StreamSubscription<Track> trackSub;
+  late StreamSubscription<Tracks> tracksSub;
+
   Track? _selectedTrack;
   Tracks? _availableTracks;
 
@@ -143,13 +147,13 @@ class _VideoPlayerState extends State<VideoPlayer> {
       debugPrint('Player log: $log');
     });
 
-    player.stream.tracks.listen((tracks) {
+    tracksSub = player.stream.tracks.listen((tracks) {
       setState(() {
-        _availableTracks ??= tracks;
+        _availableTracks = tracks;
       });
     });
 
-    player.stream.track.listen((track) {
+    trackSub = player.stream.track.listen((track) {
       setState(() {
         _selectedTrack = track;
       });
@@ -173,6 +177,8 @@ class _VideoPlayerState extends State<VideoPlayer> {
 
   @override
   void dispose() {
+    trackSub.cancel();
+    tracksSub.cancel();
     player.dispose();
     super.dispose();
   }
