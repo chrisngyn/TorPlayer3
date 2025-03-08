@@ -21,7 +21,7 @@ class LoadingElevatedButton extends StatefulWidget {
   });
 
   final String text;
-  final Future<void> Function() onPressed;
+  final Function() onPressed;
   final bool disable;
   final IconData? icon;
 

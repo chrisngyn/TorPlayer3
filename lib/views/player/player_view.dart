@@ -68,10 +68,10 @@ class PlayerView extends StatelessWidget {
       videoFile.name,
     );
 
-    final List<UriSubtitle> uriSubittles = [];
+    final List<UriSubtitle> torrentSubittles = [];
     for (final (i, file) in files.indexed) {
       if (isSubitleFile(file.name)) {
-        uriSubittles.add(UriSubtitle(
+        torrentSubittles.add(UriSubtitle(
           name: file.name.split("/").last,
           url: torrent.LibTorrent().getStreamURL(
             infoHash,
@@ -89,7 +89,7 @@ class PlayerView extends StatelessWidget {
         const SizedBox(height: 10),
         VideoPlayer(
           url: videoURL,
-          uriSubtitles: uriSubittles,
+          torrentSubtitles: torrentSubittles,
         ),
       ],
     );
@@ -113,17 +113,33 @@ class UriSubtitle {
 
   final String name;
   final String url;
+
+  Future<SubtitleTrack> toSubtitleTrack({String titlePrefix = ""}) async {
+    // download subtitle file and got content using http package
+    HttpClient httpClient = HttpClient();
+    HttpClientRequest request = await httpClient.getUrl(Uri.parse(url));
+    HttpClientResponse response = await request.close();
+    if (response.statusCode != 200) {
+      throw Exception("Failed to download subtitle file");
+    }
+    String content = await utf8.decodeStream(response);
+    var title = name;
+    if (titlePrefix.isNotEmpty) {
+      title = "$titlePrefix: $name";
+    }
+    return SubtitleTrack.data(content, title: title);
+  }
 }
 
 class VideoPlayer extends StatefulWidget {
   const VideoPlayer({
     super.key,
     required this.url,
-    this.uriSubtitles = const [],
+    this.torrentSubtitles = const [],
   });
 
   final String url;
-  final List<UriSubtitle> uriSubtitles;
+  final List<UriSubtitle> torrentSubtitles;
 
   @override
   State<VideoPlayer> createState() => _VideoPlayerState();
@@ -236,8 +252,11 @@ class _VideoPlayerState extends State<VideoPlayer> {
       children: [
         const Text('Available videos:'),
         Wrap(
+          alignment: WrapAlignment.start,
           direction: Axis.horizontal,
+          crossAxisAlignment: WrapCrossAlignment.start,
           spacing: 10,
+          runSpacing: 10,
           children: _availableTracks!.video.map((track) {
             return elevatedButton(
               text: track.title ?? track.id,
@@ -250,8 +269,11 @@ class _VideoPlayerState extends State<VideoPlayer> {
         ),
         const Text('Available audios:'),
         Wrap(
+          alignment: WrapAlignment.start,
           direction: Axis.horizontal,
+          crossAxisAlignment: WrapCrossAlignment.start,
           spacing: 10,
+          runSpacing: 10,
           children: _availableTracks!.audio.map((track) {
             return elevatedButton(
               text: track.title ?? track.id,
@@ -264,9 +286,17 @@ class _VideoPlayerState extends State<VideoPlayer> {
         ),
         const Text('Available subitles:'),
         Wrap(
+          alignment: WrapAlignment.start,
           direction: Axis.horizontal,
+          crossAxisAlignment: WrapCrossAlignment.start,
           spacing: 10,
-          children: _availableTracks!.subtitle.map((track) {
+          children: _availableTracks!.subtitle.where((track) {
+            if (track.title == null) {
+              return true;
+            }
+            return !track.title!
+                .startsWith("tor"); // only show default subtitles.
+          }).map((track) {
             return elevatedButton(
               text: track.title ?? track.id,
               onPressed: () {
@@ -281,41 +311,36 @@ class _VideoPlayerState extends State<VideoPlayer> {
   }
 
   Widget uriSubtitles() {
+    if (widget.torrentSubtitles.isEmpty) {
+      return const SizedBox();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Subtitles:'),
+        const Text('Torrent Subtitles:'),
         Wrap(
           alignment: WrapAlignment.start,
-          // direction: Axis.horizontal,
+          direction: Axis.horizontal,
           crossAxisAlignment: WrapCrossAlignment.start,
           spacing: 10,
           runSpacing: 10,
-          children: widget.uriSubtitles.map((uriSubtitle) {
+          children: widget.torrentSubtitles.map((uriSubtitle) {
             return LoadingElevatedButton(
               text: uriSubtitle.name,
               onPressed: () async {
-                _selectUriSubtitle(uriSubtitle);
+                final subtitle =
+                    await uriSubtitle.toSubtitleTrack(titlePrefix: "tor");
+                player.setSubtitleTrack(subtitle);
               },
-              disable: _selectedTrack?.subtitle.title == uriSubtitle.name,
+              disable:
+                  _selectedTrack?.subtitle.title?.endsWith(uriSubtitle.name) ??
+                      false,
               icon: Icons.subtitles,
             );
           }).toList(),
         ),
       ],
     );
-  }
-
-  Future<void> _selectUriSubtitle(UriSubtitle subtitle) async {
-    // download subtitle file and got content using http package
-    HttpClient httpClient = HttpClient();
-    HttpClientRequest request =
-        await httpClient.getUrl(Uri.parse(subtitle.url));
-    HttpClientResponse response = await request.close();
-    if (response.statusCode == 200) {
-      String content = await utf8.decodeStream(response);
-      player
-          .setSubtitleTrack(SubtitleTrack.data(content, title: subtitle.name));
-    }
   }
 }
