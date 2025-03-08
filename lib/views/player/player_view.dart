@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -213,6 +214,8 @@ class _VideoPlayerState extends State<VideoPlayer> {
             children: [
               availableTracks(),
               const SizedBox(height: 10),
+              subtitleFromFile(),
+              const SizedBox(height: 10),
               uriSubtitles(),
             ],
           ),
@@ -305,6 +308,31 @@ class _VideoPlayerState extends State<VideoPlayer> {
               disable: _selectedTrack?.subtitle.id == track.id,
             );
           }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget subtitleFromFile() {
+    return Row(
+      children: [
+        const Text('Subtitle from file:'),
+        ElevatedButton(
+          onPressed: () async {
+            final file = await FilePicker.platform.pickFiles(
+              type: FileType.custom,
+              allowedExtensions: ['srt', 'vtt', 'webm'],
+            );
+            if (file == null) {
+              return;
+            }
+            final content = await file.files.first.xFile.readAsString();
+            final title = "file: ${file.files.first.name}";
+            final subtitle = SubtitleTrack.data(content, title: title);
+
+            player.setSubtitleTrack(subtitle);
+          },
+          child: const Text('Select file'),
         ),
       ],
     );
