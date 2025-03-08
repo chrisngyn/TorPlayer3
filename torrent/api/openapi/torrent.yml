@@ -17,8 +17,6 @@ tags:
     x-displayName: "Streaming"
 
 paths:
-  
-
   /torrents:
     get:
       operationId: listTorrents
@@ -27,7 +25,7 @@ paths:
       summary: "List torrents"
       description: "List of torrents"
       responses:
-        '200':
+        "200":
           description: "List of torrents"
           content:
             application/json:
@@ -38,8 +36,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Torrent"
-                required: [ "torrents" ]
-        '500':
+                required: ["torrents"]
+        "500":
           description: "Internal server error"
 
     post:
@@ -62,7 +60,7 @@ paths:
               required:
                 - content
       responses:
-        '200':
+        "200":
           description: "Add torrent response"
           content:
             application/json:
@@ -72,10 +70,10 @@ paths:
                   infoHash:
                     type: string
                     description: "Torrent info hash"
-                required: [ "infoHash" ]
-        '400':
+                required: ["infoHash"]
+        "400":
           description: "Invalid request"
-        '500':
+        "500":
           description: "Internal server error"
 
     delete:
@@ -92,13 +90,13 @@ paths:
           schema:
             type: boolean
       responses:
-        '204':
+        "204":
           description: "Torrents dropped"
-        '500':
+        "500":
           description: "Internal server error"
 
   /torrents/{infoHash}:
-    get: 
+    get:
       operationId: getTorrent
       tags:
         - torrent
@@ -107,15 +105,37 @@ paths:
       parameters:
         - $ref: "#/components/parameters/infoHash"
       responses:
-        '200':
+        "200":
           description: "Torrent"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Torrent"
-        '400':
+        "400":
           description: "Torrent not found"
-        '500':
+        "500":
+          description: "Internal server error"
+
+  /torrents/{infoHash}/files/{fileIndex}/stats:
+    get:
+      operationId: getTorrentFileStats
+      tags:
+        - torrent
+      summary: "Get torrent file stats"
+      description: "Get torrent file stats"
+      parameters:
+        - $ref: "#/components/parameters/infoHash"
+        - $ref: "#/components/parameters/fileIndex"
+      responses:
+        "200":
+          description: "Torrent file stats"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Stats"
+        "404":
+          description: "Torrent file not found"
+        "500":
           description: "Internal server error"
 
   /torrents/{infoHash}/files/{fileIndex}/stream/{fileName}:
@@ -130,40 +150,17 @@ paths:
         - $ref: "#/components/parameters/fileIndex"
         - $ref: "#/components/parameters/fileName"
       responses:
-        '200':
+        "200":
           description: "File stream"
           content:
             application/octet-stream:
               schema:
                 type: string
                 format: binary
-        '404':
+        "404":
           description: "File not found"
-        '500':
+        "500":
           description: "Internal server error"
-
-  /torrents/{infoHash}/files/{fileIndex}/stats:
-    get:
-      operationId: getTorrentStats
-      tags:
-        - stream
-      summary: "Get torrent stats"
-      description: "Get torrent stats"
-      parameters:
-        - $ref: "#/components/parameters/infoHash"
-        - $ref: "#/components/parameters/fileIndex"
-      responses:
-        '200':
-          description: "Torrent stats"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Stats"
-        '404':
-          description: "Torrent not found"
-        '500':
-          description: "Internal server error"
-
 
 components:
   parameters:
@@ -225,7 +222,7 @@ components:
       required:
         - name
         - size
-    
+
     Stats:
       type: object
       properties:

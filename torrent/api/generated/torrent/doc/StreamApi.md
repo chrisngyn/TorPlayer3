@@ -9,54 +9,8 @@ All URIs are relative to *http://localhost:8080*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**getTorrentStats**](StreamApi.md#gettorrentstats) | **GET** /torrents/{infoHash}/files/{fileIndex}/stats | Get torrent stats
 [**streamFile**](StreamApi.md#streamfile) | **GET** /torrents/{infoHash}/files/{fileIndex}/stream/{fileName} | Stream file
 
-
-# **getTorrentStats**
-> Stats getTorrentStats(infoHash, fileIndex)
-
-Get torrent stats
-
-Get torrent stats
-
-### Example
-```dart
-import 'package:openapi_client/api.dart';
-
-final api_instance = StreamApi();
-final infoHash = infoHash_example; // String | Torrent info hash
-final fileIndex = 56; // int | File index
-
-try {
-    final result = api_instance.getTorrentStats(infoHash, fileIndex);
-    print(result);
-} catch (e) {
-    print('Exception when calling StreamApi->getTorrentStats: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **infoHash** | **String**| Torrent info hash | 
- **fileIndex** | **int**| File index | 
-
-### Return type
-
-[**Stats**](Stats.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **streamFile**
 > MultipartFile streamFile(infoHash, fileIndex, fileName)

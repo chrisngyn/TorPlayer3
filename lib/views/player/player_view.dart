@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:tor_player/views/components/buttons.dart';
+import 'package:tor_player/views/player/file_stats.dart';
 
 import 'package:torrent/torrent.dart' as torrent;
 
@@ -57,11 +58,12 @@ class PlayerView extends StatelessWidget {
         return const SizedBox();
       }
 
-      return torrentVideo(torrent.files, fileIndex);
+      return torrentVideo(context, torrent.files, fileIndex);
     });
   }
 
-  Widget torrentVideo(List<torrent.File> files, int videoIndex) {
+  Widget torrentVideo(
+      BuildContext context, List<torrent.File> files, int videoIndex) {
     final videoFile = files[videoIndex];
     final videoURL = torrent.LibTorrent().getStreamURL(
       infoHash,
@@ -86,7 +88,18 @@ class PlayerView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Name: ${videoFile.name}'),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(videoFile.name.split("/").last,
+                  style: Theme.of(context).textTheme.headlineMedium),
+              const SizedBox(height: 10),
+              FileStats(infoHash: infoHash, fileIndex: videoIndex),
+            ],
+          ),
+        ),
         const SizedBox(height: 10),
         VideoPlayer(
           url: videoURL,

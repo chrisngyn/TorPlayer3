@@ -20,7 +20,7 @@ func (s *Server) StreamFile(w http.ResponseWriter, r *http.Request, infoHash Inf
 	}
 }
 
-func (s *Server) GetTorrentStats(w http.ResponseWriter, r *http.Request, infoHash InfoHash, fileIndex FileIndex) {
+func (s *Server) GetTorrentFileStats(w http.ResponseWriter, r *http.Request, infoHash InfoHash, fileIndex FileIndex) {
 	ih, err := torrent.InfoHashFromString(infoHash)
 	if err != nil {
 		respondError(w, r, err, http.StatusBadRequest)
