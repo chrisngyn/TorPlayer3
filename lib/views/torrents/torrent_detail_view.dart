@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pretty_bytes/pretty_bytes.dart';
 import 'package:tor_player/routers/app_routes.dart';
+import 'package:tor_player/views/torrents/torrent_actions.dart';
 
 import 'package:torrent/torrent.dart' as torrent;
 
@@ -62,7 +63,11 @@ class TorrentDetailView extends StatelessWidget {
                         .bodyMedium!
                         .merge(const TextStyle(fontStyle: FontStyle.italic))),
                 const SizedBox(height: 10),
-                torrentActions(context),
+                TorrentActions(
+                    infoHash: infoHash,
+                    onDeleted: () {
+                      context.goNamed(AppRoutes.torrentList);
+                    }),
                 const SizedBox(height: 10),
                 _TorrentDetail(aTorrent: torrent)
               ],
@@ -70,40 +75,6 @@ class TorrentDetailView extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-
-  Widget torrentActions(BuildContext context) {
-    return Row(
-      children: [
-        ElevatedButton.icon(
-          onPressed: () async {
-            await torrent.LibTorrent().torrentApi.downloadTorrent(infoHash);
-          },
-          icon: const Icon(Icons.download),
-          label: const Text('Download'),
-        ),
-        const SizedBox(width: 10),
-        ElevatedButton.icon(
-          onPressed: () async {
-            await torrent.LibTorrent().torrentApi.cancelTorrent(infoHash);
-          },
-          icon: const Icon(Icons.pause),
-          label: const Text('Cancel'),
-        ),
-        const SizedBox(width: 10),
-        ElevatedButton.icon(
-          onPressed: () async {
-            await torrent.LibTorrent().torrentApi.deleteTorrent(infoHash);
-            // ignore: use_build_context_synchronously
-            context.goNamed(
-              AppRoutes.torrentList,
-            );
-          },
-          icon: const Icon(Icons.delete),
-          label: const Text('Delete'),
-        ),
-      ],
     );
   }
 }

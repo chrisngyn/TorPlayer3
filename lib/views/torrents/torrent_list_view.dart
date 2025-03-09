@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pretty_bytes/pretty_bytes.dart';
 import 'package:tor_player/routers/app_routes.dart';
+import 'package:tor_player/views/torrents/torrent_actions.dart';
 
 import 'package:torrent/torrent.dart' as torrent;
 
@@ -37,14 +38,40 @@ class TorrentListView extends StatelessWidget {
             );
           }
 
-          return torrentList(context, snapshot.data!);
+          return _TorrentList(torrents: snapshot.data!);
         },
       ),
     );
   }
+}
 
-  Widget torrentList(BuildContext context, List<torrent.Torrent> torrents) {
-    if (torrents.isEmpty) {
+class _TorrentList extends StatefulWidget {
+  const _TorrentList({required this.torrents});
+  final List<torrent.Torrent> torrents;
+
+  @override
+  State<_TorrentList> createState() => __TorrentListState();
+}
+
+class __TorrentListState extends State<_TorrentList> {
+  late List<torrent.Torrent> _torrents;
+
+  @override
+  void initState() {
+    super.initState();
+    _torrents = List.from(widget.torrents);
+  }
+
+  void _deleteTorrent(int index) {
+    setState(() {
+      _torrents.removeAt(index);
+    });
+  }
+
+  @override
+  @override
+  Widget build(BuildContext context) {
+    if (_torrents.isEmpty) {
       return const Center(
         child: Text('No torrents found'),
       );
@@ -52,20 +79,23 @@ class TorrentListView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListView.builder(
-        itemCount: torrents.length,
+        itemCount: _torrents.length,
         itemBuilder: (context, index) {
-          final torrent = torrents[index];
-          return _TorrentInfo(aTorrent: torrent);
+          final torrent = _torrents[index];
+          return _TorrentInfo(
+            aTorrent: torrent,
+            onDeleted: () => _deleteTorrent(index),
+          );
         },
       ),
     );
   }
 }
-
 class _TorrentInfo extends StatefulWidget {
-  const _TorrentInfo({required this.aTorrent});
+  const _TorrentInfo({required this.aTorrent, required this.onDeleted});
 
   final torrent.Torrent aTorrent;
+  final Function() onDeleted;
 
   @override
   State<_TorrentInfo> createState() => __TorrentInfoState();
@@ -91,9 +121,14 @@ class __TorrentInfoState extends State<_TorrentInfo> {
   }
 
   Future<void> _updateStats() async {
-    final newTorrentStats = await torrent.LibTorrent()
-        .torrentApi
-        .getTorrentStats(widget.aTorrent.infoHash);
+    torrent.TorrentStats? newTorrentStats;
+    try {
+      newTorrentStats = await torrent.LibTorrent()
+          .torrentApi
+          .getTorrentStats(widget.aTorrent.infoHash);
+    } catch (e) {
+      debugPrint('Failed to fetch torrent stats: $e');
+    }
 
     final newStats = newTorrentStats?.stats;
     if (newStats == null) {
@@ -139,6 +174,11 @@ class __TorrentInfoState extends State<_TorrentInfo> {
                   'Downloaded: ${prettyBytes((_stats?.bytesCompleted ?? 0).toDouble())}/${prettyBytes(widget.aTorrent.size.toDouble())}'),
               Text(
                   'Speed: ${prettyBytes(_verlocityBytesPerSecond.toDouble())}/s'),
+              const SizedBox(height: 8),
+              TorrentActions(
+                infoHash: widget.aTorrent.infoHash,
+                onDeleted: () => widget.onDeleted(),
+              )
             ],
           ),
           IconButton(
