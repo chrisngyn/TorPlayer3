@@ -104,19 +104,9 @@ func toHTTPFiles(files []*gotorrent.File) []File {
 
 func toHTTPFile(f *gotorrent.File) File {
 	return File{
-		Name: f.Path(),
-		Size: f.Length(),
+		Path: f.Path(),
+		Length: f.Length(),
 	}
 }
 
-func toHTTPStats(stats torrent.Stats) Stats {
-	return Stats{
-		ActivePeers:    stats.ActivePeers,
-		BytesCompleted: stats.BytesCompleted,
-		ConnectedPeers: stats.ConnectedSeeders,
-		HalfOpenPeers:  stats.HalfOpenPeers,
-		Length:         stats.Length,
-		PendingPeers:   stats.PendingPeers,
-		TotalPeers:     stats.TotalPeers,
-	}
-}
+

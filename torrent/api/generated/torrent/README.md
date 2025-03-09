@@ -66,6 +66,7 @@ Class | Method | HTTP request | Description
 *TorrentApi* | [**dropAllTorrents**](doc//TorrentApi.md#dropalltorrents) | **DELETE** /torrents | Drop all torrents
 *TorrentApi* | [**getTorrent**](doc//TorrentApi.md#gettorrent) | **GET** /torrents/{infoHash} | Get torrent
 *TorrentApi* | [**getTorrentFileStats**](doc//TorrentApi.md#gettorrentfilestats) | **GET** /torrents/{infoHash}/files/{fileIndex}/stats | Get torrent file stats
+*TorrentApi* | [**getTorrentStats**](doc//TorrentApi.md#gettorrentstats) | **GET** /torrents/{infoHash}/stats | Get torrent stats
 *TorrentApi* | [**listTorrents**](doc//TorrentApi.md#listtorrents) | **GET** /torrents | List torrents
 
 
@@ -77,6 +78,8 @@ Class | Method | HTTP request | Description
  - [ListTorrents200Response](doc//ListTorrents200Response.md)
  - [Stats](doc//Stats.md)
  - [Torrent](doc//Torrent.md)
+ - [TorrentStats](doc//TorrentStats.md)
+ - [TorrentStatsFile](doc//TorrentStatsFile.md)
 
 
 ## Documentation For Authorization

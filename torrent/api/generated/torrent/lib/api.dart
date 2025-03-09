@@ -37,6 +37,8 @@ part 'model/file.dart';
 part 'model/list_torrents200_response.dart';
 part 'model/stats.dart';
 part 'model/torrent.dart';
+part 'model/torrent_stats.dart';
+part 'model/torrent_stats_file.dart';
 
 
 /// An [ApiClient] instance that uses the default values obtained from

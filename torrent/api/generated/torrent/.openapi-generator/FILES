@@ -1,4 +1,5 @@
 .gitignore
+.openapi-generator-ignore
 .travis.yml
 README.md
 analysis_options.yaml
@@ -10,6 +11,8 @@ doc/Stats.md
 doc/StreamApi.md
 doc/Torrent.md
 doc/TorrentApi.md
+doc/TorrentStats.md
+doc/TorrentStatsFile.md
 git_push.sh
 lib/api.dart
 lib/api/stream_api.dart
@@ -28,6 +31,8 @@ lib/model/file.dart
 lib/model/list_torrents200_response.dart
 lib/model/stats.dart
 lib/model/torrent.dart
+lib/model/torrent_stats.dart
+lib/model/torrent_stats_file.dart
 pubspec.yaml
 test/add_torrent200_response_test.dart
 test/add_torrent_request_test.dart
@@ -36,4 +41,6 @@ test/list_torrents200_response_test.dart
 test/stats_test.dart
 test/stream_api_test.dart
 test/torrent_api_test.dart
+test/torrent_stats_file_test.dart
+test/torrent_stats_test.dart
 test/torrent_test.dart

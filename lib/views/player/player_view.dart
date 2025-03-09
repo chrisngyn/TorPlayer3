@@ -68,18 +68,18 @@ class PlayerView extends StatelessWidget {
     final videoURL = torrent.LibTorrent().getStreamURL(
       infoHash,
       fileIndex,
-      videoFile.name,
+      videoFile.path,
     );
 
     final List<UriSubtitle> torrentSubittles = [];
     for (final (i, file) in files.indexed) {
-      if (isSubitleFile(file.name)) {
+      if (isSubitleFile(file.path)) {
         torrentSubittles.add(UriSubtitle(
-          name: file.name.split("/").last,
+          name: file.path.split("/").last,
           url: torrent.LibTorrent().getStreamURL(
             infoHash,
             i,
-            file.name,
+            file.path,
           ),
         ));
       }
@@ -93,7 +93,7 @@ class PlayerView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(videoFile.name.split("/").last,
+              Text(videoFile.path.split("/").last,
                   style: Theme.of(context).textTheme.headlineMedium),
               const SizedBox(height: 10),
               FileStats(infoHash: infoHash, fileIndex: videoIndex),

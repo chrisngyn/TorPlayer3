@@ -10,44 +10,44 @@
 
 part of openapi.api;
 
-class File {
-  /// Returns a new [File] instance.
-  File({
-    required this.path,
+class TorrentStatsFile {
+  /// Returns a new [TorrentStatsFile] instance.
+  TorrentStatsFile({
     required this.length,
+    required this.bytesCompleted,
   });
 
-  /// File name
-  String path;
-
-  /// File size
+  /// File length
   int length;
 
+  /// Bytes completed
+  int bytesCompleted;
+
   @override
-  bool operator ==(Object other) => identical(this, other) || other is File &&
-    other.path == path &&
-    other.length == length;
+  bool operator ==(Object other) => identical(this, other) || other is TorrentStatsFile &&
+    other.length == length &&
+    other.bytesCompleted == bytesCompleted;
 
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
-    (path.hashCode) +
-    (length.hashCode);
+    (length.hashCode) +
+    (bytesCompleted.hashCode);
 
   @override
-  String toString() => 'File[path=$path, length=$length]';
+  String toString() => 'TorrentStatsFile[length=$length, bytesCompleted=$bytesCompleted]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-      json[r'path'] = this.path;
       json[r'length'] = this.length;
+      json[r'bytesCompleted'] = this.bytesCompleted;
     return json;
   }
 
-  /// Returns a new [File] instance and imports its values from
+  /// Returns a new [TorrentStatsFile] instance and imports its values from
   /// [value] if it's a [Map], null otherwise.
   // ignore: prefer_constructors_over_static_methods
-  static File? fromJson(dynamic value) {
+  static TorrentStatsFile? fromJson(dynamic value) {
     if (value is Map) {
       final json = value.cast<String, dynamic>();
 
@@ -56,25 +56,25 @@ class File {
       // Note 2: this code is stripped in release mode!
       assert(() {
         requiredKeys.forEach((key) {
-          assert(json.containsKey(key), 'Required key "File[$key]" is missing from JSON.');
-          assert(json[key] != null, 'Required key "File[$key]" has a null value in JSON.');
+          assert(json.containsKey(key), 'Required key "TorrentStatsFile[$key]" is missing from JSON.');
+          assert(json[key] != null, 'Required key "TorrentStatsFile[$key]" has a null value in JSON.');
         });
         return true;
       }());
 
-      return File(
-        path: mapValueOfType<String>(json, r'path')!,
+      return TorrentStatsFile(
         length: mapValueOfType<int>(json, r'length')!,
+        bytesCompleted: mapValueOfType<int>(json, r'bytesCompleted')!,
       );
     }
     return null;
   }
 
-  static List<File> listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <File>[];
+  static List<TorrentStatsFile> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <TorrentStatsFile>[];
     if (json is List && json.isNotEmpty) {
       for (final row in json) {
-        final value = File.fromJson(row);
+        final value = TorrentStatsFile.fromJson(row);
         if (value != null) {
           result.add(value);
         }
@@ -83,12 +83,12 @@ class File {
     return result.toList(growable: growable);
   }
 
-  static Map<String, File> mapFromJson(dynamic json) {
-    final map = <String, File>{};
+  static Map<String, TorrentStatsFile> mapFromJson(dynamic json) {
+    final map = <String, TorrentStatsFile>{};
     if (json is Map && json.isNotEmpty) {
       json = json.cast<String, dynamic>(); // ignore: parameter_assignments
       for (final entry in json.entries) {
-        final value = File.fromJson(entry.value);
+        final value = TorrentStatsFile.fromJson(entry.value);
         if (value != null) {
           map[entry.key] = value;
         }
@@ -97,14 +97,14 @@ class File {
     return map;
   }
 
-  // maps a json object with a list of File-objects as value to a dart map
-  static Map<String, List<File>> mapListFromJson(dynamic json, {bool growable = false,}) {
-    final map = <String, List<File>>{};
+  // maps a json object with a list of TorrentStatsFile-objects as value to a dart map
+  static Map<String, List<TorrentStatsFile>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<TorrentStatsFile>>{};
     if (json is Map && json.isNotEmpty) {
       // ignore: parameter_assignments
       json = json.cast<String, dynamic>();
       for (final entry in json.entries) {
-        map[entry.key] = File.listFromJson(entry.value, growable: growable,);
+        map[entry.key] = TorrentStatsFile.listFromJson(entry.value, growable: growable,);
       }
     }
     return map;
@@ -112,8 +112,8 @@ class File {
 
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
-    'path',
     'length',
+    'bytesCompleted',
   };
 }
 

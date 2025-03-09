@@ -116,6 +116,27 @@ paths:
         "500":
           description: "Internal server error"
 
+  /torrents/{infoHash}/stats:
+    get:
+      operationId: getTorrentStats
+      tags:
+        - torrent
+      summary: "Get torrent stats"
+      description: "Get torrent stats"
+      parameters:
+        - $ref: "#/components/parameters/infoHash"
+      responses:
+        "200":
+          description: "Torrent stats"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TorrentStats"
+        "404":
+          description: "Torrent not found"
+        "500":
+          description: "Internal server error"
+
   /torrents/{infoHash}/files/{fileIndex}/stats:
     get:
       operationId: getTorrentFileStats
@@ -212,16 +233,44 @@ components:
     File:
       type: object
       properties:
-        name:
+        path:
           type: string
           description: "File name"
-        size:
+        length:
           type: integer
           format: int64
           description: "File size"
       required:
-        - name
-        - size
+        - path
+        - length
+
+    TorrentStats:
+      type: object
+      properties:
+        stats:
+          $ref: "#/components/schemas/Stats"
+        files:
+          type: array
+          items:
+            $ref: "#/components/schemas/TorrentStatsFile"
+      required:
+        - stats
+        - files
+    
+    TorrentStatsFile:
+      type: object
+      properties:
+        length:
+          type: integer
+          description: "File length"
+          format: int64
+        bytesCompleted:
+          type: integer
+          description: "Bytes completed"
+          format: int64
+      required:
+        - length
+        - bytesCompleted
 
     Stats:
       type: object

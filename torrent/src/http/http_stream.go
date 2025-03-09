@@ -3,8 +3,6 @@ package http
 import (
 	"net/http"
 
-	"github.com/go-chi/render"
-
 	"torrent/torrent"
 )
 
@@ -18,16 +16,4 @@ func (s *Server) StreamFile(w http.ResponseWriter, r *http.Request, infoHash Inf
 		respondError(w, r, err, http.StatusInternalServerError)
 		return
 	}
-}
-
-func (s *Server) GetTorrentFileStats(w http.ResponseWriter, r *http.Request, infoHash InfoHash, fileIndex FileIndex) {
-	ih, err := torrent.InfoHashFromString(infoHash)
-	if err != nil {
-		respondError(w, r, err, http.StatusBadRequest)
-		return
-	}
-
-	stats := s.torManager.Stats(ih, fileIndex)
-
-	render.Respond(w, r, toHTTPStats(stats))
 }
