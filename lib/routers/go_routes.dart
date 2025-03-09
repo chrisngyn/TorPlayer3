@@ -4,7 +4,8 @@ import 'package:tor_player/routers/app_routes.dart';
 import 'package:tor_player/routers/scaffold_with_nested_navigation.dart';
 import 'package:tor_player/views/home_view.dart';
 import 'package:tor_player/views/player/player_view.dart';
-import 'package:tor_player/views/torrent_detail_view.dart';
+import 'package:tor_player/views/torrents/torrent_detail_view.dart';
+import 'package:tor_player/views/torrents/torrent_list_view.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -31,21 +32,28 @@ final goRouter = GoRouter(
           builder: (context, state) => const HomeView(),
         ),
         GoRoute(
-          name: AppRoutes.torrentDetail,
-          path: "/torrents/:infoHash",
-          builder: (context, state) {
-            final infoHash = state.pathParameters['infoHash']!;
-            return TorrentDetailView(infoHash: infoHash);
-          },
-        ),
-        GoRoute(
-          name: AppRoutes.player,
-          path: "/torrents/:infoHash/files/:fileIndex",
-          builder: (context, state) {
-            final infoHash = state.pathParameters['infoHash']!;
-            final fileIndex = int.parse(state.pathParameters['fileIndex']!);
-            return PlayerView(infoHash: infoHash, fileIndex: fileIndex);
-          },
+          name: AppRoutes.torrentList,
+          path: "/torrents",
+          builder: (context, state) => const TorrentListView(),
+          routes: [
+            GoRoute(
+              name: AppRoutes.torrentDetail,
+              path: "/:infoHash",
+              builder: (context, state) {
+                final infoHash = state.pathParameters['infoHash']!;
+                return TorrentDetailView(infoHash: infoHash);
+              },
+            ),
+            GoRoute(
+              name: AppRoutes.player,
+              path: "/:infoHash/files/:fileIndex",
+              builder: (context, state) {
+                final infoHash = state.pathParameters['infoHash']!;
+                final fileIndex = int.parse(state.pathParameters['fileIndex']!);
+                return PlayerView(infoHash: infoHash, fileIndex: fileIndex);
+              },
+            ),
+          ],
         ),
       ],
     )

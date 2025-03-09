@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tor_player/routers/app_routes.dart';
 
 List<(String, Icon)> _getDestinations() {
   return [
@@ -39,10 +41,26 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
   }
 
   static int _calculateSelectedIndex(BuildContext context) {
+    final state = GoRouterState.of(context);
+    switch (state.topRoute?.name) {
+      case AppRoutes.home:
+        return 0;
+      case AppRoutes.torrentList:
+        return 1;
+    }
     return 0;
   }
 
-  static void _onDestinationSelected(BuildContext context, int index) {}
+  static void _onDestinationSelected(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        GoRouter.of(context).goNamed(AppRoutes.home);
+        break;
+      case 1:
+        GoRouter.of(context).goNamed(AppRoutes.torrentList);
+        break;
+    }
+  }
 }
 
 class ScaffoldWithNavigationBar extends StatelessWidget {
