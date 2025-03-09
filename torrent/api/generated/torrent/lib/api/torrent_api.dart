@@ -72,6 +72,159 @@ class TorrentApi {
     return null;
   }
 
+  /// Cancel torrent
+  ///
+  /// Cancel torrent by info hash
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [String] infoHash (required):
+  ///   Torrent info hash
+  Future<Response> cancelTorrentWithHttpInfo(String infoHash,) async {
+    // ignore: prefer_const_declarations
+    final path = r'/torrents/{infoHash}/cancel'
+      .replaceAll('{infoHash}', infoHash);
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'POST',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// Cancel torrent
+  ///
+  /// Cancel torrent by info hash
+  ///
+  /// Parameters:
+  ///
+  /// * [String] infoHash (required):
+  ///   Torrent info hash
+  Future<void> cancelTorrent(String infoHash,) async {
+    final response = await cancelTorrentWithHttpInfo(infoHash,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+  }
+
+  /// Delete torrent
+  ///
+  /// Delete torrent by info hash
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [String] infoHash (required):
+  ///   Torrent info hash
+  Future<Response> deleteTorrentWithHttpInfo(String infoHash,) async {
+    // ignore: prefer_const_declarations
+    final path = r'/torrents/{infoHash}/delete'
+      .replaceAll('{infoHash}', infoHash);
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'DELETE',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// Delete torrent
+  ///
+  /// Delete torrent by info hash
+  ///
+  /// Parameters:
+  ///
+  /// * [String] infoHash (required):
+  ///   Torrent info hash
+  Future<void> deleteTorrent(String infoHash,) async {
+    final response = await deleteTorrentWithHttpInfo(infoHash,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+  }
+
+  /// Start download torrent
+  ///
+  /// Start download torrent by info hash
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [String] infoHash (required):
+  ///   Torrent info hash
+  Future<Response> downloadTorrentWithHttpInfo(String infoHash,) async {
+    // ignore: prefer_const_declarations
+    final path = r'/torrents/{infoHash}/download'
+      .replaceAll('{infoHash}', infoHash);
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'POST',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  /// Start download torrent
+  ///
+  /// Start download torrent by info hash
+  ///
+  /// Parameters:
+  ///
+  /// * [String] infoHash (required):
+  ///   Torrent info hash
+  Future<void> downloadTorrent(String infoHash,) async {
+    final response = await downloadTorrentWithHttpInfo(infoHash,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+  }
+
   /// Drop all torrents
   ///
   /// Drop all torrents

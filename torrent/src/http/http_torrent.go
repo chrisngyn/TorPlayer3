@@ -56,6 +56,44 @@ func (s *Server) GetTorrent(w http.ResponseWriter, r *http.Request, infoHash Inf
 	render.Respond(w, r, toHTTPTorrent(torrent))
 }
 
+func (s *Server) DownloadTorrent(w http.ResponseWriter, r *http.Request, infoHash InfoHash) {
+	hash, err := torrent.InfoHashFromString(string(infoHash))
+	if err != nil {
+		respondError(w, r, err, http.StatusBadRequest)
+		return
+	}
+
+	s.torManager.DownloadAll(hash)
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (s *Server) CancelTorrent(w http.ResponseWriter, r *http.Request, infoHash InfoHash) {
+	hash, err := torrent.InfoHashFromString(string(infoHash))
+	if err != nil {
+		respondError(w, r, err, http.StatusBadRequest)
+		return
+	}
+
+	s.torManager.Cancel(hash)
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (s *Server) DeleteTorrent(w http.ResponseWriter, r *http.Request, infoHash InfoHash) {
+	hash, err := torrent.InfoHashFromString(string(infoHash))
+	if err != nil {
+		respondError(w, r, err, http.StatusBadRequest)
+		return
+	}
+
+	err = s.torManager.Delete(hash)
+	if err != nil {
+		respondError(w, r, err, http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
 func (s *Server) DropAllTorrents(w http.ResponseWriter, r *http.Request, params DropAllTorrentsParams) {
 	deleteAllTorrents := false
 	if params.Delete != nil {
@@ -104,9 +142,7 @@ func toHTTPFiles(files []*gotorrent.File) []File {
 
 func toHTTPFile(f *gotorrent.File) File {
 	return File{
-		Path: f.Path(),
+		Path:   f.Path(),
 		Length: f.Length(),
 	}
 }
-
-

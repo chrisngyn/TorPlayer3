@@ -116,6 +116,57 @@ paths:
         "500":
           description: "Internal server error"
 
+  /torrents/{infoHash}/download:
+    post:
+      operationId: downloadTorrent
+      tags:
+        - torrent
+      summary: "Start download torrent"
+      description: "Start download torrent by info hash"
+      parameters:
+        - $ref: "#/components/parameters/infoHash"
+      responses:
+        "204":
+          description: "Torrent started download"
+        "404":
+          description: "Torrent not found"
+        "500":
+          description: "Internal server error"
+
+  /torrents/{infoHash}/cancel:
+    post:
+      operationId: cancelTorrent
+      tags:
+        - torrent
+      summary: "Cancel torrent"
+      description: "Cancel torrent by info hash"
+      parameters:
+        - $ref: "#/components/parameters/infoHash"
+      responses:
+        "204":
+          description: "Torrent canceled"
+        "404":
+          description: "Torrent not found"
+        "500":
+          description: "Internal server error"
+
+  /torrents/{infoHash}/delete:
+    delete:
+      operationId: deleteTorrent
+      tags:
+        - torrent
+      summary: "Delete torrent"
+      description: "Delete torrent by info hash"
+      parameters:
+        - $ref: "#/components/parameters/infoHash"
+      responses:
+        "204":
+          description: "Torrent deleted"
+        "404":
+          description: "Torrent not found"
+        "500":
+          description: "Internal server error"
+
   /torrents/{infoHash}/stats:
     get:
       operationId: getTorrentStats
@@ -256,7 +307,7 @@ components:
       required:
         - stats
         - files
-    
+
     TorrentStatsFile:
       type: object
       properties:

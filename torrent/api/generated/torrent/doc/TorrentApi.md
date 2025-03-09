@@ -10,6 +10,9 @@ All URIs are relative to *http://localhost:8080*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**addTorrent**](TorrentApi.md#addtorrent) | **POST** /torrents | Add torrent
+[**cancelTorrent**](TorrentApi.md#canceltorrent) | **POST** /torrents/{infoHash}/cancel | Cancel torrent
+[**deleteTorrent**](TorrentApi.md#deletetorrent) | **DELETE** /torrents/{infoHash}/delete | Delete torrent
+[**downloadTorrent**](TorrentApi.md#downloadtorrent) | **POST** /torrents/{infoHash}/download | Start download torrent
 [**dropAllTorrents**](TorrentApi.md#dropalltorrents) | **DELETE** /torrents | Drop all torrents
 [**getTorrent**](TorrentApi.md#gettorrent) | **GET** /torrents/{infoHash} | Get torrent
 [**getTorrentFileStats**](TorrentApi.md#gettorrentfilestats) | **GET** /torrents/{infoHash}/files/{fileIndex}/stats | Get torrent file stats
@@ -57,6 +60,132 @@ No authorization required
 
  - **Content-Type**: application/json
  - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **cancelTorrent**
+> cancelTorrent(infoHash)
+
+Cancel torrent
+
+Cancel torrent by info hash
+
+### Example
+```dart
+import 'package:openapi_client/api.dart';
+
+final api_instance = TorrentApi();
+final infoHash = infoHash_example; // String | Torrent info hash
+
+try {
+    api_instance.cancelTorrent(infoHash);
+} catch (e) {
+    print('Exception when calling TorrentApi->cancelTorrent: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **infoHash** | **String**| Torrent info hash | 
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **deleteTorrent**
+> deleteTorrent(infoHash)
+
+Delete torrent
+
+Delete torrent by info hash
+
+### Example
+```dart
+import 'package:openapi_client/api.dart';
+
+final api_instance = TorrentApi();
+final infoHash = infoHash_example; // String | Torrent info hash
+
+try {
+    api_instance.deleteTorrent(infoHash);
+} catch (e) {
+    print('Exception when calling TorrentApi->deleteTorrent: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **infoHash** | **String**| Torrent info hash | 
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **downloadTorrent**
+> downloadTorrent(infoHash)
+
+Start download torrent
+
+Start download torrent by info hash
+
+### Example
+```dart
+import 'package:openapi_client/api.dart';
+
+final api_instance = TorrentApi();
+final infoHash = infoHash_example; // String | Torrent info hash
+
+try {
+    api_instance.downloadTorrent(infoHash);
+} catch (e) {
+    print('Exception when calling TorrentApi->downloadTorrent: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **infoHash** | **String**| Torrent info hash | 
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
