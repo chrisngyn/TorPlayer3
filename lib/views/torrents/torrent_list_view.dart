@@ -78,8 +78,9 @@ class __TorrentListState extends State<_TorrentList> {
     }
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: ListView.builder(
+      child: ListView.separated(
         itemCount: _torrents.length,
+        separatorBuilder: (context, index) => const SizedBox(height: 10),
         itemBuilder: (context, index) {
           final torrent = _torrents[index];
           return _TorrentInfo(

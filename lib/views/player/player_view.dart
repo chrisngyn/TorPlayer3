@@ -226,7 +226,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               availableTracks(),
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               subtitleFromFile(),
               const SizedBox(height: 10),
               uriSubtitles(),
@@ -283,6 +283,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
             );
           }).toList(),
         ),
+        const SizedBox(height: 10),
         const Text('Available audios:'),
         Wrap(
           alignment: WrapAlignment.start,
@@ -300,6 +301,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
             );
           }).toList(),
         ),
+        const SizedBox(height: 10),
         const Text('Available subitles:'),
         Wrap(
           alignment: WrapAlignment.start,
@@ -330,11 +332,12 @@ class _VideoPlayerState extends State<VideoPlayer> {
     return Row(
       children: [
         const Text('Subtitle from file:'),
-        ElevatedButton(
+        const SizedBox(width: 10),
+        ElevatedButton.icon(
           onPressed: () async {
             final file = await FilePicker.platform.pickFiles(
               type: FileType.custom,
-              allowedExtensions: ['srt', 'vtt', 'webm'],
+              allowedExtensions: ['srt', 'vtt', 'webm', "ass"],
             );
             if (file == null) {
               return;
@@ -345,7 +348,8 @@ class _VideoPlayerState extends State<VideoPlayer> {
 
             player.setSubtitleTrack(subtitle);
           },
-          child: const Text('Select file'),
+          label: const Text('Select file'),
+          icon: const Icon(Icons.upload),
         ),
       ],
     );
