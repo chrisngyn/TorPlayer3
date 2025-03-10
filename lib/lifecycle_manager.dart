@@ -1,6 +1,9 @@
+import 'dart:developer';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:tor_player/services/preferences/preferences_service.dart';
 import 'package:torrent/torrent.dart' as torrent;
 
 class LifecycleManager extends StatefulWidget {
@@ -36,7 +39,7 @@ class _LifecycleManagerState extends State<LifecycleManager>
       _error = e;
       if (mounted) {
         setState(() {
-          debugPrint('Error initializing services: $e');
+          log('Error initializing services: $e');
           _error = e;
         });
       }
@@ -56,14 +59,34 @@ class _LifecycleManagerState extends State<LifecycleManager>
   }
 
   Future<void> _initServices() async {
-    // Initialize services
-    _dataDirPath = '/home/chrisngyn/Downloads/TorPlayer';
+    _dataDirPath = PreferencesService.getInstance().dataDir;
+    log("Starting libtorrent with data dir: $_dataDirPath");
     torrent.LibTorrent().start(_dataDirPath, 0);
-    _isInitialized = true;
   }
 
   void _cleanUp() {
+    log("Cleaning up services");
     torrent.LibTorrent().stop();
+    if (PreferencesService.getInstance().deleteAfterClose) {
+      _deleteDataDir();
+    }
+  }
+
+  void _deleteDataDir() {
+    log("Deleting data dir: $_dataDirPath");
+    final dataDir = Directory(_dataDirPath);
+    final contents = dataDir.listSync();
+    for (final entity in contents) {
+      try {
+        if (entity is File) {
+          entity.deleteSync();
+        } else if (entity is Directory) {
+          entity.deleteSync(recursive: true);
+        }
+      } catch (e) {
+        log("Failed to delete entity: $entity, error: $e");
+      }
+    }
   }
 
   @override
