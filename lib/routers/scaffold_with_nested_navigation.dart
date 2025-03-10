@@ -47,6 +47,8 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
         return 0;
       case AppRoutes.torrentList:
         return 1;
+      case AppRoutes.settings:
+        return 2;
     }
     return 0;
   }
@@ -58,6 +60,9 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
         break;
       case 1:
         GoRouter.of(context).goNamed(AppRoutes.torrentList);
+        break;
+      case 2:
+        GoRouter.of(context).goNamed(AppRoutes.settings);
         break;
     }
   }

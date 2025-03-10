@@ -4,6 +4,7 @@ import 'package:tor_player/routers/app_routes.dart';
 import 'package:tor_player/routers/scaffold_with_nested_navigation.dart';
 import 'package:tor_player/views/home_view.dart';
 import 'package:tor_player/views/player/player_view.dart';
+import 'package:tor_player/views/settings_view.dart';
 import 'package:tor_player/views/torrents/torrent_detail_view.dart';
 import 'package:tor_player/views/torrents/torrent_list_view.dart';
 
@@ -55,6 +56,11 @@ final goRouter = GoRouter(
             ),
           ],
         ),
+        GoRoute(
+          name: AppRoutes.settings,
+          path: "/settings",
+          builder: (context, state) => const SettingsView(),
+        )
       ],
     )
   ],
