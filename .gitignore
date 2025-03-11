@@ -48,6 +48,7 @@ app.*.map.json
 *.dll
 *.so
 *.dylib
+*.AppImage
 
 .vscode/
 .idea/
