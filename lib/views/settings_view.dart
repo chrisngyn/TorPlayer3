@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:tor_player/constants/environment_vars.dart';
 import 'package:tor_player/services/preferences/preferences_service.dart';
 
 class SettingsView extends StatefulWidget {
@@ -32,35 +33,49 @@ class _SettingsViewState extends State<SettingsView> {
   }
 
   Widget body(BuildContext context) {
-    return Column(
-      children: [
-        ListTile(
-          title: const Text('Data Directory'),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(_dataDirPath),
-              if (_isDataDirPathChanged)
-                Text(
-                  'Data directory path has been changed. Restart the app to apply changes.',
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.onSurface),
-                ),
-            ],
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'Version: ${Contrants.APP_VERSION}',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontStyle: Theme.of(context).textTheme.bodySmall!.merge(TextStyle(fontStyle: FontStyle.italic)).fontStyle,
+              ),
+            ),
           ),
-          trailing: IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              _updateDataDirPath();
-            },
+          ListTile(
+            title: const Text('Data Directory'),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(_dataDirPath),
+                if (_isDataDirPathChanged)
+                  Text(
+                    'Data directory path has been changed. Restart the app to apply changes.',
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                  ),
+              ],
+            ),
+            trailing: IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () {
+                _updateDataDirPath();
+              },
+            ),
           ),
-        ),
-        SwitchListTile(
-          title: const Text('Delete After Close'),
-          value: _deleteAfterClose,
-          onChanged: _updateDeleteAfterClose,
-        ),
-      ],
+          SwitchListTile(
+            title: const Text('Delete After Close'),
+            value: _deleteAfterClose,
+            onChanged: _updateDeleteAfterClose,
+          ),
+        ],
+      ),
     );
   }
 
