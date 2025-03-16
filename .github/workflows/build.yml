@@ -46,6 +46,10 @@ jobs:
           packages: libglu1-mesa clang cmake ninja-build libgtk-3-dev libmpv-dev mpv libfuse2
           version: 1.0
 
+      - name: Reinstall FUSE
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y --reinstall libfuse2
+
       - name: Test linux
         if: runner.os == 'Linux'
         run: |
