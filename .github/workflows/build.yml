@@ -50,7 +50,7 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get install -y --reinstall libfuse2
 
-      - name: Test linux
+      - name: Fix missing libblas.so.3 and liblapack.so.3
         if: runner.os == 'Linux'
         run: |
           sudo find /usr/lib -name libblas.so.3
@@ -73,7 +73,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: tor_player_{{ runner.os }}
+          name: tor_player_${{ runner.os }}
           path: |
             build/*.AppImage
             build\*.exe

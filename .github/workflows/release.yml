@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  # Get version
+  extract_version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+    steps:
+      - name: Extract version from tag
+        id: extract_version
+        run: echo ::set-output name=version::${GITHUB_REF/refs\/tags\/v/}
+
+  build:
+    needs: [extract_version]
+    uses: ./.github/workflows/build.yml
+    with:
+      app_version: ${{ needs.extract_version.outputs.version }}
+      build_number: ${{ github.run_attempt}}
+
+  release:
+    permissions:
+      contents: write
+    needs: [build, extract_version]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: tor_player_*
+          merge-multiple: true
+
+      # display all file and folders
+      - name: List files
+        run: ls -R
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/*.AppImage
+            build/*.exe
+            build/*.dmg
+            build/*.pkg
