@@ -18,7 +18,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     env:
       APP_VERSION: ${{ inputs.app_version }}
@@ -63,11 +63,42 @@ jobs:
         shell:
           bash
 
-          # Build for each platform
+        # Build for each platform
+
+        # Build for Linux
       - name: Build for Linux
         if: runner.os == 'Linux'
         run: scripts/build-linux.sh ${{ env.APP_VERSION }} ${{ env.BUILD_NUMBER }}
         shell: bash
+
+        # Build for windows
+      - name: Install msys2
+        id: msys2
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: git mingw-w64-ucrt-x86_64-gcc
+
+      - name: Change path to include ucrt64
+        if: runner.os == 'Windows'
+        run: |
+          echo '${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin' >> $GITHUB_PATH
+        shell: bash
+
+      - name: Build Windows
+        if: runner.os == 'Windows'
+        run: scripts/build-windows.sh ${{ env.APP_VERSION }} ${{ github.run_attempt }}
+        shell: bash
+
+      - name: Compile .ISS to .EXE Installer
+        if: runner.os == 'Windows'
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: windows/torplayer.iss
+          options: /DMyAppVersion=${{ env.APP_VERSION }} /DWorkingDir="${{ github.workspace }}" /DUCRT64Dir="${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin" /F"TorPlayer-${{ env.APP_VERSION }}_Setup"
+
 
       # Upload artifacts
       - name: Upload artifacts
