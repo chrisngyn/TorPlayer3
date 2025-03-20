@@ -1,16 +1,54 @@
-# tor_player
+# Tor Player
 
-A new Flutter project.
+A cross-platform application that allows users to stream videos from the torrent network.
 
-## Getting Started
+## Features
+- Stream videos directly from torrent files
+- Cross-platform support
+    - [x] Windows
+    - [x] macOS
+    - [x] Linux
+    - [ ] Android
+- User-friendly interface
+- Support for various video formats
+- Subtitle support
+    - [ ] Adjust subtitle settings
+- Download and watch offline
 
-This project is a starting point for a Flutter application.
+## Installation
 
-A few resources to get you started if this is your first Flutter project:
+### Prerequisites
+- [Flutter](https://flutter.dev/docs/get-started/install) installed on your machine
+- [Dart](https://dart.dev/get-dart) installed on your machine
+- [Go](https://go.dev/) installed on your machine
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Steps
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/yourusername/TorPlayer.git
+    cd TorPlayer
+    ```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+2. Install dependencies:
+    ```sh
+    flutter pub get
+    ```
+
+3. Run the application:
+    ```sh
+    flutter run
+    ```
+
+## Usage
+1. Open the application
+2. Paste the magnet link or upload a torrent file
+3. Click on the play button to start streaming
+
+**Note:** The torrent file will be downloaded to the default download directory on your machine. You can change the download directory in the settings.
+
+### Screenshots
+![Home](images/Screenshot_1.jpg)
+![Player](images/Screenshot_2.jpg)
+
+## Contributing
+Contributions are welcome! Please open an issue or submit a pull request.
