@@ -43,6 +43,6 @@ jobs:
         with:
           files: |
             build/*.AppImage
-            build/*.exe
+            *.exe
             build/*.dmg
             build/*.pkg
