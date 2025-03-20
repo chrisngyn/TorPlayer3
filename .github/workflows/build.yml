@@ -18,7 +18,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     env:
       APP_VERSION: ${{ inputs.app_version }}
@@ -60,12 +60,13 @@ jobs:
         # Run flutter doctor to verify dependencies
       - name: Flutter doctor
         run: flutter doctor --verbose
-        shell:
-          bash
+        shell: bash
 
+        ############################
         # Build for each platform
+        ############################
 
-        # Build for Linux
+      # Build for Linux
       - name: Build for Linux
         if: runner.os == 'Linux'
         run: scripts/build-linux.sh ${{ env.APP_VERSION }} ${{ env.BUILD_NUMBER }}
@@ -99,6 +100,11 @@ jobs:
           path: windows/torplayer.iss
           options: /DMyAppVersion=${{ env.APP_VERSION }} /DWorkingDir="${{ github.workspace }}" /DUCRT64Dir="${{ steps.msys2.outputs.msys2-location }}\ucrt64\bin" /F"TorPlayer-${{ env.APP_VERSION }}_Setup"
 
+        # Build for macOS
+      - name: Build for macOS
+        if: runner.os == 'macOS'
+        run: scripts/build-macos.sh ${{ env.APP_VERSION }} ${{ env.BUILD_NUMBER }}
+        shell: bash
 
       # Upload artifacts
       - name: Upload artifacts
